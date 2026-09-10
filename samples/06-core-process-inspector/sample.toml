@@ -1,0 +1,4 @@
+name = "06-core-process-inspector"
+programs = "target-btf:core_process_inspector"
+runner = "sample-runner"
+status = "quarantined"

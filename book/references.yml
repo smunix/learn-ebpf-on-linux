@@ -1,0 +1,798 @@
+bpf-design-q-and-a:
+  type: Web
+  title: "BPF Design Q&A"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/bpf_design_QA.html"
+  accessed: 2026-09-10
+bpf-verifier:
+  type: Web
+  title: "eBPF verifier"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/verifier.html"
+  accessed: 2026-09-10
+bpf-lsm:
+  type: Web
+  title: "LSM BPF Programs"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/prog_lsm.html"
+  accessed: 2026-09-10
+bpf-map:
+  type: Web
+  title: "BPF maps"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/maps.html"
+  accessed: 2026-09-10
+bpf-ringbuf:
+  type: Web
+  title: "BPF ring buffer"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/ringbuf.html"
+  accessed: 2026-09-10
+libbpf-core:
+  type: Web
+  title: "libbpf Overview"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/libbpf/libbpf_overview.html"
+  accessed: 2026-09-10
+aya-book:
+  type: Web
+  title: "Building eBPF Programs with Aya"
+  author:
+    - name: "Aya contributors"
+  url: "https://aya-rs.dev/book/"
+  accessed: 2026-09-10
+nixos-flakes:
+  type: Web
+  title: "Flakes"
+  author:
+    - name: "NixOS Wiki contributors"
+  url: "https://wiki.nixos.org/wiki/Flakes"
+  accessed: 2026-09-10
+capabilities:
+  type: Web
+  title: "capabilities(7) — Linux manual page"
+  author:
+    - name: "Michael Kerrisk"
+  url: "https://man7.org/linux/man-pages/man7/capabilities.7.html"
+  accessed: 2026-09-10
+cgroups-v2:
+  type: Web
+  title: "Control Group v2"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/admin-guide/cgroup-v2.html"
+  accessed: 2026-09-10
+seccomp:
+  type: Web
+  title: "seccomp(2) — Linux manual page"
+  author:
+    - name: "Michael Kerrisk"
+  url: "https://man7.org/linux/man-pages/man2/seccomp.2.html"
+  accessed: 2026-09-10
+xdp-rxq:
+  type: Web
+  title: "XDP RX Metadata"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/networking/xdp-rx-metadata.html"
+  accessed: 2026-09-10
+
+# BPF history, instruction ABI, loader interface, and verifier
+bsd-packet-filter:
+  type: Article
+  title: "The BSD Packet Filter: A New Architecture for User-level Packet Capture"
+  author:
+    - name: "Steven McCanne"
+    - name: "Van Jacobson"
+  date: 1993
+  organization: "USENIX Association"
+  url: "https://www.usenix.org/legacy/publications/library/proceedings/sd93/mccanne.pdf"
+  accessed: 2026-09-10
+bpf-instruction-set:
+  type: Web
+  title: "BPF Instruction Set Architecture"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/standardization/instruction-set.html"
+  accessed: 2026-09-10
+bpf-abi-conventions:
+  type: Web
+  title: "BPF ABI Recommended Conventions and Guidelines"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/standardization/abi.html"
+  accessed: 2026-09-10
+classic-versus-extended-bpf:
+  type: Web
+  title: "Classic BPF vs eBPF"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/classic_vs_extended.html"
+  accessed: 2026-09-10
+ebpf-syscall:
+  type: Web
+  title: "eBPF Syscall"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/userspace-api/ebpf/syscall.html"
+  accessed: 2026-09-10
+bpf-system-call:
+  type: Web
+  title: "bpf(2) — perform a command on an extended BPF map or program"
+  author:
+    - name: "Michael Kerrisk"
+  url: "https://man7.org/linux/man-pages/man2/bpf.2.html"
+  accessed: 2026-09-10
+bpf-helpers:
+  type: Web
+  title: "bpf-helpers(7) — list of eBPF helper functions"
+  author:
+    - name: "Michael Kerrisk"
+  url: "https://man7.org/linux/man-pages/man7/bpf-helpers.7.html"
+  accessed: 2026-09-10
+bpf-program-types:
+  type: Web
+  title: "Program Types and ELF Sections"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/libbpf/program_types.html"
+  accessed: 2026-09-10
+bpf-development-q-and-a:
+  type: Web
+  title: "HOWTO interact with BPF subsystem"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/bpf_devel_QA.html"
+  accessed: 2026-09-10
+bpf-kfuncs:
+  type: Web
+  title: "BPF Kernel Functions (kfuncs)"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/kfuncs.html"
+  accessed: 2026-09-10
+bpf-uapi-v612:
+  type: Web
+  title: "Linux v6.12 BPF userspace API header"
+  author:
+    - name: "Linux kernel developers"
+  url: "https://github.com/torvalds/linux/blob/v6.12/include/uapi/linux/bpf.h"
+  accessed: 2026-09-10
+bpf-bounded-loops-commit:
+  type: Web
+  title: "bpf: introduce bounded loops"
+  author:
+    - name: "Linux kernel developers"
+  url: "https://github.com/torvalds/linux/commit/2589726d12a1"
+  accessed: 2026-09-10
+
+# Maps, object lifetime, BTF, CO-RE, and event transport
+bpf-map-hash:
+  type: Web
+  title: "BPF_MAP_TYPE_HASH, with PERCPU and LRU Variants"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/map_hash.html"
+  accessed: 2026-09-10
+bpf-map-array:
+  type: Web
+  title: "BPF_MAP_TYPE_ARRAY and BPF_MAP_TYPE_PERCPU_ARRAY"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/map_array.html"
+  accessed: 2026-09-10
+bpf-map-queue-stack:
+  type: Web
+  title: "BPF_MAP_TYPE_QUEUE and BPF_MAP_TYPE_STACK"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/map_queue_stack.html"
+  accessed: 2026-09-10
+bpf-map-lpm-trie:
+  type: Web
+  title: "BPF_MAP_TYPE_LPM_TRIE"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/map_lpm_trie.html"
+  accessed: 2026-09-10
+bpf-map-of-maps:
+  type: Web
+  title: "BPF_MAP_TYPE_ARRAY_OF_MAPS and BPF_MAP_TYPE_HASH_OF_MAPS"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/map_of_maps.html"
+  accessed: 2026-09-10
+bpf-type-format:
+  type: Web
+  title: "BPF Type Format (BTF)"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/btf.html"
+  accessed: 2026-09-10
+bpf-llvm-relocations:
+  type: Web
+  title: "BPF LLVM Relocations"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/llvm_reloc.html"
+  accessed: 2026-09-10
+bpf-filesystem-kfuncs:
+  type: Web
+  title: "BPF filesystem kfuncs"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/fs_kfuncs.html"
+  accessed: 2026-09-10
+perf-event-open:
+  type: Web
+  title: "perf_event_open(2) — set up performance monitoring"
+  author:
+    - name: "Michael Kerrisk"
+  url: "https://man7.org/linux/man-pages/man2/perf_event_open.2.html"
+  accessed: 2026-09-10
+perf-security:
+  type: Web
+  title: "Perf events and tool security"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/admin-guide/perf-security.html"
+  accessed: 2026-09-10
+bpftool-feature:
+  type: Web
+  title: "bpftool-feature(8) — probe BPF features"
+  author:
+    - name: "bpftool developers"
+  url: "https://www.mankier.com/8/bpftool-feature"
+  accessed: 2026-09-10
+
+# Tracepoint and kernel-subsystem interfaces
+kernel-tracepoint-api:
+  type: Web
+  title: "The Linux Kernel Tracepoint API"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/core-api/tracepoint.html"
+  accessed: 2026-09-10
+kernel-trace-events:
+  type: Web
+  title: "Event Tracing"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/trace/events.html"
+  accessed: 2026-09-10
+kernel-ftrace:
+  type: Web
+  title: "ftrace — Function Tracer"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/trace/ftrace.html"
+  accessed: 2026-09-10
+kernel-tracepoint-analysis:
+  type: Web
+  title: "Notes on Analysing Behaviour Using Events and Tracepoints"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/trace/tracepoint-analysis.html"
+  accessed: 2026-09-10
+linux-syscall-trace-events-v612:
+  type: Web
+  title: "Linux v6.12 syscall trace-event definitions"
+  author:
+    - name: "Linux kernel developers"
+  url: "https://github.com/torvalds/linux/blob/v6.12/include/trace/events/syscalls.h"
+  accessed: 2026-09-10
+linux-scheduler-trace-events-v612:
+  type: Web
+  title: "Linux v6.12 scheduler trace-event definitions"
+  author:
+    - name: "Linux kernel developers"
+  url: "https://github.com/torvalds/linux/blob/v6.12/include/trace/events/sched.h"
+  accessed: 2026-09-10
+linux-exception-trace-events-v612:
+  type: Web
+  title: "Linux v6.12 exception trace-event definitions"
+  author:
+    - name: "Linux kernel developers"
+  url: "https://github.com/torvalds/linux/blob/v6.12/include/trace/events/exceptions.h"
+  accessed: 2026-09-10
+linux-credentials:
+  type: Web
+  title: "Credentials in Linux"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/security/credentials.html"
+  accessed: 2026-09-10
+linux-vfs:
+  type: Web
+  title: "Overview of the Linux Virtual File System"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/filesystems/vfs.html"
+  accessed: 2026-09-10
+linux-cfs-scheduler:
+  type: Web
+  title: "CFS Scheduler"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/scheduler/sched-design-CFS.html"
+  accessed: 2026-09-10
+linux-page-tables:
+  type: Web
+  title: "Page Tables"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/mm/page_tables.html"
+  accessed: 2026-09-10
+linux-network-scaling:
+  type: Web
+  title: "Scaling in the Linux Networking Stack"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/networking/scaling.html"
+  accessed: 2026-09-10
+linux-af-xdp:
+  type: Web
+  title: "AF_XDP"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/networking/af_xdp.html"
+  accessed: 2026-09-10
+bpf-cgroup-sockopt:
+  type: Web
+  title: "BPF_PROG_TYPE_CGROUP_SOCKOPT"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/bpf/prog_cgroup_sockopt.html"
+  accessed: 2026-09-10
+
+# Containers, privilege, seccomp, and mandatory access control
+cgroups-man-page:
+  type: Web
+  title: "cgroups(7) — Linux manual page"
+  author:
+    - name: "Michael Kerrisk"
+  url: "https://man7.org/linux/man-pages/man7/cgroups.7.html"
+  accessed: 2026-09-10
+namespaces-man-page:
+  type: Web
+  title: "namespaces(7) — Linux manual page"
+  author:
+    - name: "Michael Kerrisk"
+  url: "https://man7.org/linux/man-pages/man7/namespaces.7.html"
+  accessed: 2026-09-10
+cgroup-namespaces-man-page:
+  type: Web
+  title: "cgroup_namespaces(7) — Linux manual page"
+  author:
+    - name: "Michael Kerrisk"
+  url: "https://man7.org/linux/man-pages/man7/cgroup_namespaces.7.html"
+  accessed: 2026-09-10
+user-namespaces-man-page:
+  type: Web
+  title: "user_namespaces(7) — Linux manual page"
+  author:
+    - name: "Michael Kerrisk"
+  url: "https://man7.org/linux/man-pages/man7/user_namespaces.7.html"
+  accessed: 2026-09-10
+seccomp-bpf:
+  type: Web
+  title: "Seccomp BPF (SECure COMPuting with filters)"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/userspace-api/seccomp_filter.html"
+  accessed: 2026-09-10
+linux-security-module-usage:
+  type: Web
+  title: "Linux Security Module Usage"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/admin-guide/LSM/index.html"
+  accessed: 2026-09-10
+linux-security-modules:
+  type: Web
+  title: "Linux Security Modules: General Security Hooks for Linux"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/security/lsm.html"
+  accessed: 2026-09-10
+linux-security-module-development:
+  type: Web
+  title: "Linux Security Module Development"
+  author:
+    - name: "Linux kernel documentation"
+  url: "https://docs.kernel.org/security/lsm-development.html"
+  accessed: 2026-09-10
+linux-lsm-hook-definitions-v612:
+  type: Web
+  title: "Linux v6.12 LSM hook definitions"
+  author:
+    - name: "Linux kernel developers"
+  url: "https://github.com/torvalds/linux/blob/v6.12/include/linux/lsm_hook_defs.h"
+  accessed: 2026-09-10
+linux-file-open-v612:
+  type: Web
+  title: "Linux v6.12 VFS open implementation"
+  author:
+    - name: "Linux kernel developers"
+  url: "https://github.com/torvalds/linux/blob/v6.12/fs/open.c"
+  accessed: 2026-09-10
+path-resolution:
+  type: Web
+  title: "path_resolution(7) — how a pathname is resolved"
+  author:
+    - name: "Michael Kerrisk"
+  url: "https://man7.org/linux/man-pages/man7/path_resolution.7.html"
+  accessed: 2026-09-10
+inode-man-page:
+  type: Web
+  title: "inode(7) — file inode information"
+  author:
+    - name: "Michael Kerrisk"
+  url: "https://man7.org/linux/man-pages/man7/inode.7.html"
+  accessed: 2026-09-10
+stat-system-call:
+  type: Web
+  title: "stat(2) — get file status"
+  author:
+    - name: "Michael Kerrisk"
+  url: "https://man7.org/linux/man-pages/man2/stat.2.html"
+  accessed: 2026-09-10
+
+# NixOS and systemd deployment interfaces
+nixos-manual-kernel:
+  type: Web
+  title: "Linux Kernel"
+  author:
+    - name: "NixOS contributors"
+  url: "https://nixos.org/manual/nixos/stable/#sec-boot-kernel"
+  accessed: 2026-09-10
+nixos-options:
+  type: Web
+  title: "Appendix A. Configuration Options"
+  author:
+    - name: "NixOS contributors"
+  url: "https://nixos.org/manual/nixos/stable/options.html"
+  accessed: 2026-09-10
+nixpkgs-kernel-module:
+  type: Web
+  title: "NixOS boot kernel module"
+  author:
+    - name: "Nixpkgs contributors"
+  url: "https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/system/boot/kernel.nix"
+  accessed: 2026-09-10
+nixpkgs-common-kernel-config:
+  type: Web
+  title: "Nixpkgs common Linux kernel configuration"
+  author:
+    - name: "Nixpkgs contributors"
+  url: "https://github.com/NixOS/nixpkgs/blob/master/pkgs/os-specific/linux/kernel/common-config.nix"
+  accessed: 2026-09-10
+nixos-security-module:
+  type: Web
+  title: "NixOS security module"
+  author:
+    - name: "Nixpkgs contributors"
+  url: "https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/security/default.nix"
+  accessed: 2026-09-10
+systemd-exec:
+  type: Web
+  title: "systemd.exec(5)"
+  author:
+    - name: "systemd developers"
+  url: "https://www.freedesktop.org/software/systemd/man/258/systemd.exec.html"
+  accessed: 2026-09-10
+systemd-resource-control:
+  type: Web
+  title: "systemd.resource-control(5)"
+  author:
+    - name: "systemd developers"
+  url: "https://www.freedesktop.org/software/systemd/man/258/systemd.resource-control.html"
+  accessed: 2026-09-10
+systemd-mount:
+  type: Web
+  title: "systemd.mount(5)"
+  author:
+    - name: "systemd developers"
+  url: "https://www.freedesktop.org/software/systemd/man/258/systemd.mount.html"
+  accessed: 2026-09-10
+systemd-api-filesystems:
+  type: Web
+  title: "API File Systems"
+  author:
+    - name: "systemd developers"
+  url: "https://systemd.io/API_FILE_SYSTEMS/"
+  accessed: 2026-09-10
+
+# Aya 0.14.0 released API documentation
+aya-014-crate:
+  type: Web
+  title: "aya 0.14.0"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya/0.14.0/aya/"
+  accessed: 2026-09-10
+aya-014-ebpf:
+  type: Web
+  title: "Ebpf in aya 0.14.0"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya/0.14.0/aya/struct.Ebpf.html"
+  accessed: 2026-09-10
+aya-014-ebpf-loader:
+  type: Web
+  title: "EbpfLoader in aya 0.14.0"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya/0.14.0/aya/struct.EbpfLoader.html"
+  accessed: 2026-09-10
+aya-014-programs:
+  type: Web
+  title: "programs module in aya 0.14.0"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya/0.14.0/aya/programs/index.html"
+  accessed: 2026-09-10
+aya-014-tracepoint:
+  type: Web
+  title: "TracePoint in aya 0.14.0"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya/0.14.0/aya/programs/trace_point/struct.TracePoint.html"
+  accessed: 2026-09-10
+aya-014-xdp:
+  type: Web
+  title: "Xdp in aya 0.14.0"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya/0.14.0/aya/programs/xdp/struct.Xdp.html"
+  accessed: 2026-09-10
+aya-014-cgroup-sock-addr:
+  type: Web
+  title: "CgroupSockAddr in aya 0.14.0"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya/0.14.0/aya/programs/cgroup_sock_addr/struct.CgroupSockAddr.html"
+  accessed: 2026-09-10
+aya-014-lsm:
+  type: Web
+  title: "Lsm in aya 0.14.0"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya/0.14.0/aya/programs/lsm/struct.Lsm.html"
+  accessed: 2026-09-10
+aya-014-map-data:
+  type: Web
+  title: "MapData in aya 0.14.0"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya/0.14.0/aya/maps/struct.MapData.html"
+  accessed: 2026-09-10
+aya-014-maps:
+  type: Web
+  title: "maps module in aya 0.14.0"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya/0.14.0/aya/maps/index.html"
+  accessed: 2026-09-10
+
+# aya-ebpf 0.2.1 released API documentation
+aya-ebpf-021-crate:
+  type: Web
+  title: "aya-ebpf 0.2.1"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya-ebpf/0.2.1/aya_ebpf/"
+  accessed: 2026-09-10
+aya-ebpf-021-maps:
+  type: Web
+  title: "maps module in aya-ebpf 0.2.1"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya-ebpf/0.2.1/aya_ebpf/maps/index.html"
+  accessed: 2026-09-10
+aya-ebpf-021-tracepoint-context:
+  type: Web
+  title: "TracePointContext in aya-ebpf 0.2.1"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya-ebpf/0.2.1/aya_ebpf/programs/tracepoint/struct.TracePointContext.html"
+  accessed: 2026-09-10
+aya-ebpf-021-percpu-array:
+  type: Web
+  title: "PerCpuArray in aya-ebpf 0.2.1"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya-ebpf/0.2.1/aya_ebpf/maps/per_cpu_array/struct.PerCpuArray.html"
+  accessed: 2026-09-10
+aya-ebpf-021-ringbuf:
+  type: Web
+  title: "RingBuf in aya-ebpf 0.2.1"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya-ebpf/0.2.1/aya_ebpf/maps/ring_buf/struct.RingBuf.html"
+  accessed: 2026-09-10
+aya-ebpf-021-perf-event-array:
+  type: Web
+  title: "PerfEventArray in aya-ebpf 0.2.1"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya-ebpf/0.2.1/aya_ebpf/maps/perf/struct.PerfEventArray.html"
+  accessed: 2026-09-10
+aya-ebpf-macros-021-tracepoint:
+  type: Web
+  title: "tracepoint attribute macro in aya-ebpf-macros 0.2.1"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya-ebpf-macros/0.2.1/aya_ebpf_macros/attr.tracepoint.html"
+  accessed: 2026-09-10
+aya-ebpf-macros-021-lsm:
+  type: Web
+  title: "lsm attribute macro in aya-ebpf-macros 0.2.1"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya-ebpf-macros/0.2.1/aya_ebpf_macros/attr.lsm.html"
+  accessed: 2026-09-10
+aya-ebpf-macros-021-lsm-cgroup:
+  type: Web
+  title: "lsm_cgroup attribute macro in aya-ebpf-macros 0.2.1"
+  author:
+    - name: "Aya contributors"
+  url: "https://docs.rs/aya-ebpf-macros/0.2.1/aya_ebpf_macros/attr.lsm_cgroup.html"
+  accessed: 2026-09-10
+
+# Exact Aya source snapshot reviewed in the research dossiers
+aya-source-014-cut:
+  type: Web
+  title: "Aya source tree at research-cut revision 0e353a7fddf80091ae2fb2dacc08ec1d861e67cc"
+  author:
+    - name: "Aya contributors"
+  url: "https://github.com/aya-rs/aya/tree/0e353a7fddf80091ae2fb2dacc08ec1d861e67cc"
+  accessed: 2026-09-10
+aya-source-loader-014-cut:
+  type: Web
+  title: "Aya EbpfLoader implementation at research-cut revision"
+  author:
+    - name: "Aya contributors"
+  url: "https://github.com/aya-rs/aya/blob/0e353a7fddf80091ae2fb2dacc08ec1d861e67cc/aya/src/bpf.rs"
+  accessed: 2026-09-10
+aya-source-tracepoint-014-cut:
+  type: Web
+  title: "Aya TracePoint implementation at research-cut revision"
+  author:
+    - name: "Aya contributors"
+  url: "https://github.com/aya-rs/aya/blob/0e353a7fddf80091ae2fb2dacc08ec1d861e67cc/aya/src/programs/trace_point.rs"
+  accessed: 2026-09-10
+aya-source-xdp-014-cut:
+  type: Web
+  title: "Aya Xdp implementation at research-cut revision"
+  author:
+    - name: "Aya contributors"
+  url: "https://github.com/aya-rs/aya/blob/0e353a7fddf80091ae2fb2dacc08ec1d861e67cc/aya/src/programs/xdp.rs"
+  accessed: 2026-09-10
+aya-source-cgroup-sock-addr-014-cut:
+  type: Web
+  title: "Aya CgroupSockAddr implementation at research-cut revision"
+  author:
+    - name: "Aya contributors"
+  url: "https://github.com/aya-rs/aya/blob/0e353a7fddf80091ae2fb2dacc08ec1d861e67cc/aya/src/programs/cgroup_sock_addr.rs"
+  accessed: 2026-09-10
+aya-source-lsm-014-cut:
+  type: Web
+  title: "Aya LSM implementation at research-cut revision"
+  author:
+    - name: "Aya contributors"
+  url: "https://github.com/aya-rs/aya/blob/0e353a7fddf80091ae2fb2dacc08ec1d861e67cc/aya/src/programs/lsm.rs"
+  accessed: 2026-09-10
+aya-ebpf-source-021-cut:
+  type: Web
+  title: "aya-ebpf crate root at research-cut revision"
+  author:
+    - name: "Aya contributors"
+  url: "https://github.com/aya-rs/aya/blob/0e353a7fddf80091ae2fb2dacc08ec1d861e67cc/ebpf/aya-ebpf/src/lib.rs"
+  accessed: 2026-09-10
+aya-ebpf-ringbuf-source-021-cut:
+  type: Web
+  title: "aya-ebpf RingBuf implementation at research-cut revision"
+  author:
+    - name: "Aya contributors"
+  url: "https://github.com/aya-rs/aya/blob/0e353a7fddf80091ae2fb2dacc08ec1d861e67cc/ebpf/aya-ebpf/src/maps/ring_buf.rs"
+  accessed: 2026-09-10
+aya-ebpf-perf-source-021-cut:
+  type: Web
+  title: "aya-ebpf PerfEventArray implementation at research-cut revision"
+  author:
+    - name: "Aya contributors"
+  url: "https://github.com/aya-rs/aya/blob/0e353a7fddf80091ae2fb2dacc08ec1d861e67cc/ebpf/aya-ebpf/src/maps/perf/perf_event_array.rs"
+  accessed: 2026-09-10
+
+# Rust representation, unsafe-code, no_std, and build boundaries
+rust-type-layout:
+  type: Web
+  title: "Type layout"
+  author:
+    - name: "Rust Project Developers"
+  url: "https://doc.rust-lang.org/reference/type-layout.html"
+  accessed: 2026-09-10
+rust-no-std:
+  type: Web
+  title: "The no_std attribute"
+  author:
+    - name: "Rust Project Developers"
+  url: "https://doc.rust-lang.org/reference/names/preludes.html#the-no_std-attribute"
+  accessed: 2026-09-10
+rust-unsafe:
+  type: Web
+  title: "Unsafe Rust"
+  author:
+    - name: "Rust Project Developers"
+  url: "https://doc.rust-lang.org/book/ch20-01-unsafe-rust.html"
+  accessed: 2026-09-10
+rust-undefined-behavior:
+  type: Web
+  title: "Behavior considered undefined"
+  author:
+    - name: "Rust Project Developers"
+  url: "https://doc.rust-lang.org/reference/behavior-considered-undefined.html"
+  accessed: 2026-09-10
+rust-pointer:
+  type: Web
+  title: "pointer — Rust standard library"
+  author:
+    - name: "Rust Project Developers"
+  url: "https://doc.rust-lang.org/std/primitive.pointer.html"
+  accessed: 2026-09-10
+rust-slice-from-raw-parts:
+  type: Web
+  title: "std::slice::from_raw_parts"
+  author:
+    - name: "Rust Project Developers"
+  url: "https://doc.rust-lang.org/std/slice/fn.from_raw_parts.html"
+  accessed: 2026-09-10
+rust-unsafe-attributes:
+  type: Web
+  title: "Attributes"
+  author:
+    - name: "Rust Project Developers"
+  url: "https://doc.rust-lang.org/reference/attributes.html"
+  accessed: 2026-09-10
+rust-panic:
+  type: Web
+  title: "Panic"
+  author:
+    - name: "Rust Project Developers"
+  url: "https://doc.rust-lang.org/reference/panic.html"
+  accessed: 2026-09-10
+cargo-build-scripts:
+  type: Web
+  title: "Build Scripts"
+  author:
+    - name: "Rust Project Developers"
+  url: "https://doc.rust-lang.org/cargo/reference/build-scripts.html"
+  accessed: 2026-09-10
+cargo-features:
+  type: Web
+  title: "Features"
+  author:
+    - name: "Rust Project Developers"
+  url: "https://doc.rust-lang.org/cargo/reference/features.html"
+  accessed: 2026-09-10
+rust-atomics:
+  type: Web
+  title: "std::sync::atomic"
+  author:
+    - name: "Rust Project Developers"
+  url: "https://doc.rust-lang.org/std/sync/atomic/"
+  accessed: 2026-09-10
+rust-mutex:
+  type: Web
+  title: "std::sync::Mutex"
+  author:
+    - name: "Rust Project Developers"
+  url: "https://doc.rust-lang.org/std/sync/struct.Mutex.html"
+  accessed: 2026-09-10

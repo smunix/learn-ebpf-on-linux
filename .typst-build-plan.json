@@ -1,0 +1,44 @@
+{
+  "base": {
+    "auto_apply": true,
+    "conflict_group": "document-base",
+    "id": "report-entry",
+    "kind": "asset",
+    "ownership": "global",
+    "path": "assets/report-entry.typ",
+    "reason": "General professional document fallback.",
+    "status": "ready"
+  },
+  "catalog_version": "2026-07-17-affiliated-formats-v3",
+  "channel": "typst-pdf",
+  "confirmation_candidates": [],
+  "enhancements": [
+    {
+      "adoption": "A",
+      "auto_apply": true,
+      "conflict_group": null,
+      "id": "glossarium",
+      "kind": "universe-package",
+      "ownership": "semantic",
+      "reason": "Content evidence satisfies {\"defined_terms\": 5}",
+      "status": "ready",
+      "universe_ref": "@preview/glossarium:0.5.10",
+      "version": "0.5.10"
+    }
+  ],
+  "exclusions": [],
+  "fingerprint": "sha256:3d178c361ee05f2a95a29a324f06e82aa2b551208f81991fba9f009a986fcca9",
+  "next_action": "minimal-compile-preflight",
+  "optional_idea": null,
+  "question": null,
+  "reused": false,
+  "preflight": {
+    "command": "python3 /home/ubuntu/skills/typst-pdf-maker/scripts/generate_pdf.py book/main.typ --strict",
+    "result": "pass",
+    "typst_version": "typst 0.15.1 (9dfd3a08)"
+  },
+  "schema_version": 1,
+  "state": "ready",
+  "style_owner": "report-entry",
+  "typst_version": "typst 0.15.1 (9dfd3a08)"
+}

@@ -1,0 +1,10 @@
+{
+  "entry": "main.typ",
+  "metadata": {
+    "author": "Providence Salumu",
+    "subtitle": "A Rust, Aya, NixOS, and Kernel Security Deep Dive",
+    "title": "Learning eBPF on Linux"
+  },
+  "mode": "report",
+  "theme": "report-theme.typ"
+}

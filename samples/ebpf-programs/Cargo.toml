@@ -1,0 +1,27 @@
+[package]
+name = "samples-ebpf"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[features]
+default = []
+# Quarantined: replace src/vmlinux.rs with generated target bindings and record
+# relocation/load evidence before enabling this feature.
+target-btf = []
+
+[dependencies]
+aya-ebpf = { workspace = true }
+sentinel-common = { workspace = true, default-features = false }
+
+[build-dependencies]
+which = { workspace = true }
+
+[[bin]]
+name = "samples-ebpf"
+path = "src/main.rs"
+
+[[bin]]
+name = "tracepoint-hello"
+path = "src/bin/tracepoint-hello.rs"

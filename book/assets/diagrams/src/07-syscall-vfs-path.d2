@@ -1,0 +1,69 @@
+direction: right
+
+classes: {
+  kernel: {
+    style: {
+      fill: "#0B1F33"
+      font-color: "#FFFFFF"
+      stroke: "#0B1F33"
+      border-radius: 8
+    }
+  }
+  user: {
+    style: {
+      fill: "#EAF3FB"
+      font-color: "#0B1F33"
+      stroke: "#1769AA"
+      border-radius: 8
+    }
+  }
+  data: {
+    style: {
+      fill: "#E7F6F5"
+      font-color: "#0B1F33"
+      stroke: "#007F8B"
+      border-radius: 8
+    }
+  }
+  decision: {
+    shape: diamond
+    style: {
+      fill: "#FFF4DF"
+      font-color: "#5C3500"
+      stroke: "#B45309"
+      border-radius: 8
+    }
+  }
+  risk: {
+    style: {
+      fill: "#FCEBEC"
+      font-color: "#6D1E1E"
+      stroke: "#9D2A2A"
+      border-radius: 8
+    }
+  }
+  note: {
+    shape: document
+    style: {
+      fill: "#F6F9FA"
+      font-color: "#162433"
+      stroke: "#526577"
+      border-radius: 6
+    }
+  }
+}
+
+n_process: "Process\nopenat2(path)" {class: user}
+n_syscall: "Syscall entry\ntracepoint" {class: kernel}
+n_resolve: "Path resolution\ndentry walk" {class: kernel}
+n_vfs: "VFS open\nfile + inode" {class: kernel}
+n_fs: "Filesystem\next4 / tmpfs / overlay" {class: kernel}
+n_cred: "Credentials\nuid · caps · LSM" {class: data}
+n_probe: "eBPF observation\nnever reconstruct paths blindly" {class: note}
+n_process -> n_syscall
+n_syscall -> n_resolve
+n_resolve -> n_vfs
+n_vfs -> n_fs
+n_cred -> n_vfs: "authorization"
+n_syscall -> n_probe: "stable tracepoint fields"
+n_vfs -> n_probe: "inode/device identity"

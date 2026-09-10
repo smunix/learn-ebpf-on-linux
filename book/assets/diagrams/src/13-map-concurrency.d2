@@ -1,0 +1,70 @@
+direction: right
+
+classes: {
+  kernel: {
+    style: {
+      fill: "#0B1F33"
+      font-color: "#FFFFFF"
+      stroke: "#0B1F33"
+      border-radius: 8
+    }
+  }
+  user: {
+    style: {
+      fill: "#EAF3FB"
+      font-color: "#0B1F33"
+      stroke: "#1769AA"
+      border-radius: 8
+    }
+  }
+  data: {
+    style: {
+      fill: "#E7F6F5"
+      font-color: "#0B1F33"
+      stroke: "#007F8B"
+      border-radius: 8
+    }
+  }
+  decision: {
+    shape: diamond
+    style: {
+      fill: "#FFF4DF"
+      font-color: "#5C3500"
+      stroke: "#B45309"
+      border-radius: 8
+    }
+  }
+  risk: {
+    style: {
+      fill: "#FCEBEC"
+      font-color: "#6D1E1E"
+      stroke: "#9D2A2A"
+      border-radius: 8
+    }
+  }
+  note: {
+    shape: document
+    style: {
+      fill: "#F6F9FA"
+      font-color: "#162433"
+      stroke: "#526577"
+      border-radius: 6
+    }
+  }
+}
+
+n_cpu0: "CPU 0\neBPF invocation" {class: kernel}
+n_cpu1: "CPU 1\neBPF invocation" {class: kernel}
+n_percpu: "Per-CPU map\nno shared increment" {class: data}
+n_hash: "Hash / LRU map\nshared keys" {class: data}
+n_lock: "spin lock / atomic\nonly when needed" {class: risk}
+n_user: "Userspace control plane\nread / update / pin" {class: user}
+n_upgrade: "Pinned map\nversion + migration" {class: note}
+n_cpu0 -> n_percpu: "local slot"
+n_cpu1 -> n_percpu: "local slot"
+n_cpu0 -> n_hash: "lookup"
+n_cpu1 -> n_hash: "lookup"
+n_hash -> n_lock: "contended mutation"
+n_user -> n_hash: "policy update"
+n_user -> n_upgrade: "persist lifecycle"
+n_upgrade -> n_hash: "reuse or migrate"

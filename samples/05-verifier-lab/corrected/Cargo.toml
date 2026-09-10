@@ -1,0 +1,11 @@
+[package]
+name = "verifier-corrected"
+version = "0.1.0"
+edition = "2024"
+publish = false
+[workspace]
+[dependencies]
+aya-ebpf = "=0.2.1"
+[[bin]]
+name = "bounded-xdp"
+path = "src/main.rs"

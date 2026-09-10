@@ -1,0 +1,63 @@
+name: build-and-verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-and-verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  foundation:
+    name: Non-privileged book and sample checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@21a544727d0c62386e78b4befe52d19ad12692e3 # v17
+
+      - name: Evaluate flake outputs without builds
+        run: nix flake check --no-build
+
+      - name: Build the Typst book
+        run: |
+          nix build .#book --out-link result-book --print-build-logs
+          test -s result-book/learn-ebpf.pdf
+
+      - name: Build and test the Rust and Aya samples
+        run: |
+          nix build .#samples --out-link result-samples --print-build-logs
+          test -x result-samples/bin/sample-runner
+          test -s result-samples/lib/learn-ebpf/tracepoint-hello
+          test -s result-samples/lib/learn-ebpf/samples-ebpf
+
+      - name: Parse shell scripts
+        run: nix develop --command bash -n scripts/*.sh
+
+      - name: Verify local documentation links
+        run: nix develop --command bash scripts/verify-links.sh --offline README.md CONTRIBUTING.md
+
+      - name: Parse documentation snippets without execution
+        run: nix develop --command bash scripts/verify-snippets.sh README.md CONTRIBUTING.md
+
+      - name: Verify generated diagrams are current
+        run: nix develop --command bash scripts/render-diagrams.sh --check
+
+      - name: Confirm the Nix formatter is clean
+        run: |
+          nix fmt
+          git diff --exit-code -- flake.nix nix
+
+# This workflow intentionally does not use elevated commands, pull_request_target,
+# secrets, eBPF attachment, a privileged container, or the NixOS VM test. Kernel-
+# attaching tests remain opt-in and belong on a disposable NixOS lab host.

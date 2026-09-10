@@ -1,0 +1,69 @@
+direction: right
+
+classes: {
+  kernel: {
+    style: {
+      fill: "#0B1F33"
+      font-color: "#FFFFFF"
+      stroke: "#0B1F33"
+      border-radius: 8
+    }
+  }
+  user: {
+    style: {
+      fill: "#EAF3FB"
+      font-color: "#0B1F33"
+      stroke: "#1769AA"
+      border-radius: 8
+    }
+  }
+  data: {
+    style: {
+      fill: "#E7F6F5"
+      font-color: "#0B1F33"
+      stroke: "#007F8B"
+      border-radius: 8
+    }
+  }
+  decision: {
+    shape: diamond
+    style: {
+      fill: "#FFF4DF"
+      font-color: "#5C3500"
+      stroke: "#B45309"
+      border-radius: 8
+    }
+  }
+  risk: {
+    style: {
+      fill: "#FCEBEC"
+      font-color: "#6D1E1E"
+      stroke: "#9D2A2A"
+      border-radius: 8
+    }
+  }
+  note: {
+    shape: document
+    style: {
+      fill: "#F6F9FA"
+      font-color: "#162433"
+      stroke: "#526577"
+      border-radius: 6
+    }
+  }
+}
+
+n_source: "Source type access\ntask_struct::comm" {class: user}
+n_localbtf: "Build-time BTF\nfield offset assumption" {class: data}
+n_object: "ELF relocation record\nCO-RE access" {class: user}
+n_targetbtf: "Target kernel BTF\nactual layout" {class: kernel}
+n_loader: "Loader / libbpf-compatible\nrelocation step" {class: user}
+n_patched: "Patched instruction\ntarget offset" {class: data}
+n_fallback: "Missing type / field\nfeature fallback" {class: risk}
+n_source -> n_localbtf
+n_localbtf -> n_object
+n_object -> n_loader
+n_loader -> n_targetbtf: "query"
+n_targetbtf -> n_patched: "compatible"
+n_targetbtf -> n_fallback: "incompatible"
+n_patched -> n_loader: "load"

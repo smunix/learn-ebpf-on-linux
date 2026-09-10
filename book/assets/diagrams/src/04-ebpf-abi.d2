@@ -1,0 +1,70 @@
+direction: right
+
+classes: {
+  kernel: {
+    style: {
+      fill: "#0B1F33"
+      font-color: "#FFFFFF"
+      stroke: "#0B1F33"
+      border-radius: 8
+    }
+  }
+  user: {
+    style: {
+      fill: "#EAF3FB"
+      font-color: "#0B1F33"
+      stroke: "#1769AA"
+      border-radius: 8
+    }
+  }
+  data: {
+    style: {
+      fill: "#E7F6F5"
+      font-color: "#0B1F33"
+      stroke: "#007F8B"
+      border-radius: 8
+    }
+  }
+  decision: {
+    shape: diamond
+    style: {
+      fill: "#FFF4DF"
+      font-color: "#5C3500"
+      stroke: "#B45309"
+      border-radius: 8
+    }
+  }
+  risk: {
+    style: {
+      fill: "#FCEBEC"
+      font-color: "#6D1E1E"
+      stroke: "#9D2A2A"
+      border-radius: 8
+    }
+  }
+  note: {
+    shape: document
+    style: {
+      fill: "#F6F9FA"
+      font-color: "#162433"
+      stroke: "#526577"
+      border-radius: 6
+    }
+  }
+}
+
+n_r1: "r1\ncontext pointer" {class: kernel}
+n_r2: "r2–r5\nhelper arguments" {class: kernel}
+n_r0: "r0\nreturn value" {class: data}
+n_r6: "r6–r9\ncallee-saved" {class: data}
+n_r10: "r10\nframe pointer" {class: kernel}
+n_stack: "512-byte stack\ninitialized + bounded" {class: risk}
+n_helper: "Helper prototype\narg types + return type" {class: note}
+n_program: "eBPF program\nregister VM" {class: user}
+n_program -> n_r1: "entry"
+n_r2 -> n_helper: "call"
+n_r0 -> n_program: "result"
+n_r6 -> n_program: "survives call"
+n_r10 -> n_stack: "negative offsets"
+n_helper -> n_r0: "contract"
+n_stack -> n_program: "verifier tracks"

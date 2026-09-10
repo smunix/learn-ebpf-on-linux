@@ -1,0 +1,30 @@
+[workspace]
+resolver = "2"
+members = ["common", "runner", "xtask", "ebpf-programs"]
+default-members = ["common", "runner", "xtask"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.87"
+license = "MIT OR Apache-2.0"
+
+[workspace.dependencies]
+anyhow = "=1.0.104"
+aya = "=0.14.0"
+aya-build = "=0.2.0"
+aya-ebpf = "=0.2.1"
+cargo_metadata = "=0.23.0"
+clap = { version = "=4.5.48", features = ["derive"] }
+libc = "=0.2.187"
+which = "=8.0.0"
+sentinel-common = { path = "common", default-features = false }
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[profile.release.package.samples-ebpf]
+debug = 2
+strip = false

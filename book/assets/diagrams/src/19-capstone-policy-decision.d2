@@ -1,0 +1,73 @@
+direction: right
+
+classes: {
+  kernel: {
+    style: {
+      fill: "#0B1F33"
+      font-color: "#FFFFFF"
+      stroke: "#0B1F33"
+      border-radius: 8
+    }
+  }
+  user: {
+    style: {
+      fill: "#EAF3FB"
+      font-color: "#0B1F33"
+      stroke: "#1769AA"
+      border-radius: 8
+    }
+  }
+  data: {
+    style: {
+      fill: "#E7F6F5"
+      font-color: "#0B1F33"
+      stroke: "#007F8B"
+      border-radius: 8
+    }
+  }
+  decision: {
+    shape: diamond
+    style: {
+      fill: "#FFF4DF"
+      font-color: "#5C3500"
+      stroke: "#B45309"
+      border-radius: 8
+    }
+  }
+  risk: {
+    style: {
+      fill: "#FCEBEC"
+      font-color: "#6D1E1E"
+      stroke: "#9D2A2A"
+      border-radius: 8
+    }
+  }
+  note: {
+    shape: document
+    style: {
+      fill: "#F6F9FA"
+      font-color: "#162433"
+      stroke: "#526577"
+      border-radius: 6
+    }
+  }
+}
+
+n_open: "file_open hook" {class: kernel}
+n_scope: "Task in demo cgroup?" {class: decision}
+n_identity: "Read inode + device\npolicy key" {class: data}
+n_match: "Protected identity matches?" {class: decision}
+n_mode: "Audit-only mode?" {class: decision}
+n_event: "Emit rationale event\nallow, deny, or miss" {class: data}
+n_allow: "Return prior result\nfail open on telemetry loss" {class: user}
+n_deny: "Return -EACCES\nonly explicit enforce mode" {class: risk}
+n_open -> n_scope
+n_scope -> n_allow: "no"
+n_scope -> n_identity: "yes"
+n_identity -> n_match
+n_match -> n_allow: "no"
+n_match -> n_mode: "yes"
+n_mode -> n_event: "yes"
+n_event -> n_allow: "audit"
+n_mode -> n_deny: "no"
+n_deny -> n_event: "record decision"

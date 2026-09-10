@@ -1,0 +1,26 @@
+# Nix build results
+result
+result-*
+.nix-profile
+
+# Repository-local build products
+.build/
+book/build/
+book/*.pdf
+book/*.typst-diagnostics.log
+book/*.verify.json
+book/review/
+book/review-final/
+
+# Rust and Aya build products
+samples/target/
+target/
+
+# Editor and operating-system files
+.direnv/
+.envrc
+.vscode/
+.idea/
+*~
+*.swp
+.DS_Store

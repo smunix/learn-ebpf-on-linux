@@ -1,0 +1,70 @@
+direction: right
+
+classes: {
+  kernel: {
+    style: {
+      fill: "#0B1F33"
+      font-color: "#FFFFFF"
+      stroke: "#0B1F33"
+      border-radius: 8
+    }
+  }
+  user: {
+    style: {
+      fill: "#EAF3FB"
+      font-color: "#0B1F33"
+      stroke: "#1769AA"
+      border-radius: 8
+    }
+  }
+  data: {
+    style: {
+      fill: "#E7F6F5"
+      font-color: "#0B1F33"
+      stroke: "#007F8B"
+      border-radius: 8
+    }
+  }
+  decision: {
+    shape: diamond
+    style: {
+      fill: "#FFF4DF"
+      font-color: "#5C3500"
+      stroke: "#B45309"
+      border-radius: 8
+    }
+  }
+  risk: {
+    style: {
+      fill: "#FCEBEC"
+      font-color: "#6D1E1E"
+      stroke: "#9D2A2A"
+      border-radius: 8
+    }
+  }
+  note: {
+    shape: document
+    style: {
+      fill: "#F6F9FA"
+      font-color: "#162433"
+      stroke: "#526577"
+      border-radius: 6
+    }
+  }
+}
+
+n_request: "System call request" {class: user}
+n_seccomp: "seccomp\nsyscall filter" {class: data}
+n_cap: "Capabilities\nprivilege gate" {class: data}
+n_lsm: "LSM stack\nsecurity hooks" {class: kernel}
+n_bpf: "BPF LSM\naudit / scoped decision" {class: data}
+n_allow: "Allow operation" {class: user}
+n_deny: "Return errno\n-EACCES" {class: risk}
+n_request -> n_seccomp
+n_seccomp -> n_cap: "permitted"
+n_seccomp -> n_deny: "filtered"
+n_cap -> n_lsm: "authorized"
+n_cap -> n_deny: "missing privilege"
+n_lsm -> n_bpf: "BPF enabled"
+n_bpf -> n_allow: "audit / allow"
+n_bpf -> n_deny: "explicit scoped deny"

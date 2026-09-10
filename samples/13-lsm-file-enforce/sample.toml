@@ -1,0 +1,4 @@
+name = "13-lsm-file-enforce"
+programs = "target-btf:lsm_file_enforce"
+runner = "sample-runner"
+status = "quarantined"

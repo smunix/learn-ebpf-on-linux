@@ -1,0 +1,3 @@
+name = "09-xdp-packet-counter"
+programs = "xdp_packet_counter"
+runner = "sample-runner"

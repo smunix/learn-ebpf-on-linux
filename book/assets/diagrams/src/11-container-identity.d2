@@ -1,0 +1,71 @@
+direction: right
+
+classes: {
+  kernel: {
+    style: {
+      fill: "#0B1F33"
+      font-color: "#FFFFFF"
+      stroke: "#0B1F33"
+      border-radius: 8
+    }
+  }
+  user: {
+    style: {
+      fill: "#EAF3FB"
+      font-color: "#0B1F33"
+      stroke: "#1769AA"
+      border-radius: 8
+    }
+  }
+  data: {
+    style: {
+      fill: "#E7F6F5"
+      font-color: "#0B1F33"
+      stroke: "#007F8B"
+      border-radius: 8
+    }
+  }
+  decision: {
+    shape: diamond
+    style: {
+      fill: "#FFF4DF"
+      font-color: "#5C3500"
+      stroke: "#B45309"
+      border-radius: 8
+    }
+  }
+  risk: {
+    style: {
+      fill: "#FCEBEC"
+      font-color: "#6D1E1E"
+      stroke: "#9D2A2A"
+      border-radius: 8
+    }
+  }
+  note: {
+    shape: document
+    style: {
+      fill: "#F6F9FA"
+      font-color: "#162433"
+      stroke: "#526577"
+      border-radius: 6
+    }
+  }
+}
+
+n_container: "Container workload" {class: user}
+n_pidns: "PID namespace\ninside PID ≠ host PID" {class: data}
+n_mntns: "Mount namespace\npath view differs" {class: data}
+n_netns: "Network namespace\ninterfaces differ" {class: data}
+n_cgroup: "cgroup v2\nstable policy scope" {class: kernel}
+n_host: "Host task_struct\ncredentials + namespaces" {class: kernel}
+n_event: "Attribution event\nhost PID + cgroup + comm" {class: note}
+n_container -> n_pidns
+n_container -> n_mntns
+n_container -> n_netns
+n_container -> n_cgroup
+n_pidns -> n_host
+n_mntns -> n_host
+n_netns -> n_host
+n_cgroup -> n_event
+n_host -> n_event

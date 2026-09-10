@@ -1,0 +1,72 @@
+direction: right
+
+classes: {
+  kernel: {
+    style: {
+      fill: "#0B1F33"
+      font-color: "#FFFFFF"
+      stroke: "#0B1F33"
+      border-radius: 8
+    }
+  }
+  user: {
+    style: {
+      fill: "#EAF3FB"
+      font-color: "#0B1F33"
+      stroke: "#1769AA"
+      border-radius: 8
+    }
+  }
+  data: {
+    style: {
+      fill: "#E7F6F5"
+      font-color: "#0B1F33"
+      stroke: "#007F8B"
+      border-radius: 8
+    }
+  }
+  decision: {
+    shape: diamond
+    style: {
+      fill: "#FFF4DF"
+      font-color: "#5C3500"
+      stroke: "#B45309"
+      border-radius: 8
+    }
+  }
+  risk: {
+    style: {
+      fill: "#FCEBEC"
+      font-color: "#6D1E1E"
+      stroke: "#9D2A2A"
+      border-radius: 8
+    }
+  }
+  note: {
+    shape: document
+    style: {
+      fill: "#F6F9FA"
+      font-color: "#162433"
+      stroke: "#526577"
+      border-radius: 6
+    }
+  }
+}
+
+n_flake: "Pinned flake\nRust · Aya · Typst" {class: user}
+n_probe: "00-lab-check\nread-only probes" {class: user}
+n_kernel: "Kernel ≥ baseline\nCONFIG_BPF + BTF" {class: kernel}
+n_mounts: "bpffs · tracefs\ncgroup v2" {class: kernel}
+n_priv: "CAP_BPF / CAP_PERFMON\nor controlled root" {class: decision}
+n_lab: "Disposable lab\nVM / namespace / cgroup" {class: data}
+n_unsupported: "Unsupported report\nnot a false pass" {class: risk}
+n_ready: "Safe sample boundary\naudit first" {class: data}
+n_flake -> n_probe
+n_probe -> n_kernel: "inspect"
+n_probe -> n_mounts: "inspect"
+n_probe -> n_priv: "check"
+n_kernel -> n_lab: "supported"
+n_mounts -> n_lab: "mounted"
+n_priv -> n_ready: "yes"
+n_priv -> n_unsupported: "no"
+n_lab -> n_ready: "isolated runtime"

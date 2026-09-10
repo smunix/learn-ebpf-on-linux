@@ -1,0 +1,6 @@
+[toolchain]
+# Pinned nightly is required by aya-build's `-Z build-std=core` BPF build.
+# Userspace source uses stable Rust APIs and declares MSRV 1.87 in Cargo.toml.
+channel = "nightly-2026-07-15"
+components = ["rust-src", "rustfmt", "clippy"]
+profile = "minimal"

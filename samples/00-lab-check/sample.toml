@@ -1,0 +1,3 @@
+name = "00-lab-check"
+programs = "none"
+runner = "sample-runner"

@@ -1,0 +1,21 @@
+{
+  "task_kind": "new-document",
+  "output": "pdf",
+  "signals": ["technical-book", "longform"],
+  "hard_constraints": [
+    "7x10-inch page",
+    "numeric citations",
+    "clickable cross-references",
+    "canonical code imported from sample files"
+  ],
+  "content_features": {
+    "code_blocks": 140,
+    "defined_terms": 180,
+    "portrait_images": 0,
+    "diagrams": 19,
+    "tables": 45,
+    "bibliography": true,
+    "cross_references": true,
+    "glossary": true
+  }
+}

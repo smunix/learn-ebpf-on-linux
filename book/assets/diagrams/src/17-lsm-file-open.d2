@@ -1,0 +1,71 @@
+direction: right
+
+classes: {
+  kernel: {
+    style: {
+      fill: "#0B1F33"
+      font-color: "#FFFFFF"
+      stroke: "#0B1F33"
+      border-radius: 8
+    }
+  }
+  user: {
+    style: {
+      fill: "#EAF3FB"
+      font-color: "#0B1F33"
+      stroke: "#1769AA"
+      border-radius: 8
+    }
+  }
+  data: {
+    style: {
+      fill: "#E7F6F5"
+      font-color: "#0B1F33"
+      stroke: "#007F8B"
+      border-radius: 8
+    }
+  }
+  decision: {
+    shape: diamond
+    style: {
+      fill: "#FFF4DF"
+      font-color: "#5C3500"
+      stroke: "#B45309"
+      border-radius: 8
+    }
+  }
+  risk: {
+    style: {
+      fill: "#FCEBEC"
+      font-color: "#6D1E1E"
+      stroke: "#9D2A2A"
+      border-radius: 8
+    }
+  }
+  note: {
+    shape: document
+    style: {
+      fill: "#F6F9FA"
+      font-color: "#162433"
+      stroke: "#526577"
+      border-radius: 6
+    }
+  }
+}
+
+n_process: "Process\nopen file" {class: user}
+n_vfs: "VFS file_open\nfile + inode" {class: kernel}
+n_stack: "LSM hook chain\nstacking order" {class: kernel}
+n_bpf: "BPF LSM program\nread cgroup + identity" {class: data}
+n_policy: "Policy map\n(device, inode, cgroup)" {class: data}
+n_audit: "Ring-buffer audit event" {class: user}
+n_allow: "Continue open" {class: user}
+n_deny: "Return -EACCES\nopt-in scope" {class: risk}
+n_process -> n_vfs
+n_vfs -> n_stack
+n_stack -> n_bpf
+n_bpf -> n_policy: "lookup"
+n_bpf -> n_audit: "always explain"
+n_policy -> n_allow: "no match / audit"
+n_policy -> n_deny: "scoped match + enforce"
+n_allow -> n_vfs

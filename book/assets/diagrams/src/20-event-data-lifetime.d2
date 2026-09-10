@@ -1,0 +1,68 @@
+direction: right
+
+classes: {
+  kernel: {
+    style: {
+      fill: "#0B1F33"
+      font-color: "#FFFFFF"
+      stroke: "#0B1F33"
+      border-radius: 8
+    }
+  }
+  user: {
+    style: {
+      fill: "#EAF3FB"
+      font-color: "#0B1F33"
+      stroke: "#1769AA"
+      border-radius: 8
+    }
+  }
+  data: {
+    style: {
+      fill: "#E7F6F5"
+      font-color: "#0B1F33"
+      stroke: "#007F8B"
+      border-radius: 8
+    }
+  }
+  decision: {
+    shape: diamond
+    style: {
+      fill: "#FFF4DF"
+      font-color: "#5C3500"
+      stroke: "#B45309"
+      border-radius: 8
+    }
+  }
+  risk: {
+    style: {
+      fill: "#FCEBEC"
+      font-color: "#6D1E1E"
+      stroke: "#9D2A2A"
+      border-radius: 8
+    }
+  }
+  note: {
+    shape: document
+    style: {
+      fill: "#F6F9FA"
+      font-color: "#162433"
+      stroke: "#526577"
+      border-radius: 6
+    }
+  }
+}
+
+n_context: "Kernel context\nvalid only in hook" {class: kernel}
+n_copy: "Copy scalar fields\nPID, cgroup, inode" {class: data}
+n_ptr: "Kernel pointer" {class: risk}
+n_map: "Map value\nexplicit ABI layout" {class: data}
+n_ring: "Ring-buffer record\nfixed-size event" {class: data}
+n_user: "Userspace decode\nvalidate version" {class: user}
+n_context -> n_copy: "read while valid"
+n_context -> n_ptr: "never persist blindly"
+n_copy -> n_map: "state"
+n_copy -> n_ring: "event"
+n_map -> n_user: "lookup"
+n_ring -> n_user: "poll"
+n_ptr -> n_user: "invalid lifetime"

@@ -1,0 +1,79 @@
+direction: right
+
+classes: {
+  kernel: {
+    style: {
+      fill: "#0B1F33"
+      font-color: "#FFFFFF"
+      stroke: "#0B1F33"
+      border-radius: 8
+    }
+  }
+  user: {
+    style: {
+      fill: "#EAF3FB"
+      font-color: "#0B1F33"
+      stroke: "#1769AA"
+      border-radius: 8
+    }
+  }
+  data: {
+    style: {
+      fill: "#E7F6F5"
+      font-color: "#0B1F33"
+      stroke: "#007F8B"
+      border-radius: 8
+    }
+  }
+  decision: {
+    shape: diamond
+    style: {
+      fill: "#FFF4DF"
+      font-color: "#5C3500"
+      stroke: "#B45309"
+      border-radius: 8
+    }
+  }
+  risk: {
+    style: {
+      fill: "#FCEBEC"
+      font-color: "#6D1E1E"
+      stroke: "#9D2A2A"
+      border-radius: 8
+    }
+  }
+  note: {
+    shape: document
+    style: {
+      fill: "#F6F9FA"
+      font-color: "#162433"
+      stroke: "#526577"
+      border-radius: 6
+    }
+  }
+}
+
+n_app: "User-space application" {class: user}
+n_loader: "Aya loader\nELF · maps · links" {class: user}
+n_verifier: "Verifier\nsafety proof" {class: kernel}
+n_maps: "BPF maps\nstate + policy" {class: data}
+n_trace: "Tracepoints / kprobes\nobserve execution" {class: kernel}
+n_net: "XDP / TC / socket\nobserve or redirect" {class: kernel}
+n_cgroup: "cgroup hooks\nattribute + constrain" {class: kernel}
+n_lsm: "BPF LSM hooks\naudit or deny" {class: kernel}
+n_kernel: "Linux kernel events\ntasks · VFS · network" {class: kernel}
+n_app -> n_loader: "configure"
+n_loader -> n_verifier: "load program"
+n_verifier -> n_trace: "attach"
+n_verifier -> n_net: "attach"
+n_verifier -> n_cgroup: "attach"
+n_verifier -> n_lsm: "attach"
+n_trace -> n_maps: "events / counters"
+n_net -> n_maps: "packets / flows"
+n_cgroup -> n_maps: "identity"
+n_lsm -> n_maps: "policy lookup"
+n_kernel -> n_trace
+n_kernel -> n_net
+n_kernel -> n_cgroup
+n_kernel -> n_lsm
+n_maps -> n_app: "read events"

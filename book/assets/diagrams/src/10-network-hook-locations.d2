@@ -1,0 +1,73 @@
+direction: right
+
+classes: {
+  kernel: {
+    style: {
+      fill: "#0B1F33"
+      font-color: "#FFFFFF"
+      stroke: "#0B1F33"
+      border-radius: 8
+    }
+  }
+  user: {
+    style: {
+      fill: "#EAF3FB"
+      font-color: "#0B1F33"
+      stroke: "#1769AA"
+      border-radius: 8
+    }
+  }
+  data: {
+    style: {
+      fill: "#E7F6F5"
+      font-color: "#0B1F33"
+      stroke: "#007F8B"
+      border-radius: 8
+    }
+  }
+  decision: {
+    shape: diamond
+    style: {
+      fill: "#FFF4DF"
+      font-color: "#5C3500"
+      stroke: "#B45309"
+      border-radius: 8
+    }
+  }
+  risk: {
+    style: {
+      fill: "#FCEBEC"
+      font-color: "#6D1E1E"
+      stroke: "#9D2A2A"
+      border-radius: 8
+    }
+  }
+  note: {
+    shape: document
+    style: {
+      fill: "#F6F9FA"
+      font-color: "#162433"
+      stroke: "#526577"
+      border-radius: 6
+    }
+  }
+}
+
+n_nic: "NIC receive" {class: kernel}
+n_xdp: "XDP\nearliest packet hook" {class: data}
+n_skb: "sk_buff creation" {class: kernel}
+n_tc: "Traffic Control\nclassifier/action" {class: data}
+n_ip: "IP / transport stack" {class: kernel}
+n_socket: "Socket layer\nconnect/send hooks" {class: data}
+n_cgroup: "cgroup socket hook\nper-workload policy" {class: data}
+n_app: "Application socket" {class: user}
+n_bounds: "data ≤ cursor ≤ data_end\nparse before dereference" {class: risk}
+n_nic -> n_xdp
+n_xdp -> n_skb: "XDP_PASS"
+n_xdp -> n_app: "XDP_DROP / redirect"
+n_skb -> n_tc
+n_tc -> n_ip
+n_ip -> n_socket
+n_socket -> n_cgroup
+n_cgroup -> n_app
+n_xdp -> n_bounds

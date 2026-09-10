@@ -1,0 +1,4 @@
+name = "07-scheduler-latency"
+programs = "none-in-default-object"
+runner = "sample-runner"
+status = "requires-generated-tracepoint-format-fixture"

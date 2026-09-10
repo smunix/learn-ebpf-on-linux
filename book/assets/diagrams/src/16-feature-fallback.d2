@@ -1,0 +1,68 @@
+direction: right
+
+classes: {
+  kernel: {
+    style: {
+      fill: "#0B1F33"
+      font-color: "#FFFFFF"
+      stroke: "#0B1F33"
+      border-radius: 8
+    }
+  }
+  user: {
+    style: {
+      fill: "#EAF3FB"
+      font-color: "#0B1F33"
+      stroke: "#1769AA"
+      border-radius: 8
+    }
+  }
+  data: {
+    style: {
+      fill: "#E7F6F5"
+      font-color: "#0B1F33"
+      stroke: "#007F8B"
+      border-radius: 8
+    }
+  }
+  decision: {
+    shape: diamond
+    style: {
+      fill: "#FFF4DF"
+      font-color: "#5C3500"
+      stroke: "#B45309"
+      border-radius: 8
+    }
+  }
+  risk: {
+    style: {
+      fill: "#FCEBEC"
+      font-color: "#6D1E1E"
+      stroke: "#9D2A2A"
+      border-radius: 8
+    }
+  }
+  note: {
+    shape: document
+    style: {
+      fill: "#F6F9FA"
+      font-color: "#162433"
+      stroke: "#526577"
+      border-radius: 6
+    }
+  }
+}
+
+n_start: "Start sample" {class: user}
+n_probe: "Probe kernel\nBTF · hook · helper · LSM" {class: kernel}
+n_supported: "Required feature present?" {class: decision}
+n_full: "Full path\nattach preferred hook" {class: data}
+n_alt: "Safe fallback available?" {class: decision}
+n_fallback: "Fallback path\ntracepoint / audit-only" {class: data}
+n_report: "Explicit unsupported result\nversion + missing capability" {class: risk}
+n_start -> n_probe
+n_probe -> n_supported
+n_supported -> n_full: "yes"
+n_supported -> n_alt: "no"
+n_alt -> n_fallback: "yes"
+n_alt -> n_report: "no"

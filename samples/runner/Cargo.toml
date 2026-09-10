@@ -1,0 +1,13 @@
+[package]
+name = "sample-runner"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+aya.workspace = true
+clap.workspace = true
+libc.workspace = true
+sentinel-common = { workspace = true, features = ["user"] }

@@ -1,0 +1,68 @@
+direction: right
+
+classes: {
+  kernel: {
+    style: {
+      fill: "#0B1F33"
+      font-color: "#FFFFFF"
+      stroke: "#0B1F33"
+      border-radius: 8
+    }
+  }
+  user: {
+    style: {
+      fill: "#EAF3FB"
+      font-color: "#0B1F33"
+      stroke: "#1769AA"
+      border-radius: 8
+    }
+  }
+  data: {
+    style: {
+      fill: "#E7F6F5"
+      font-color: "#0B1F33"
+      stroke: "#007F8B"
+      border-radius: 8
+    }
+  }
+  decision: {
+    shape: diamond
+    style: {
+      fill: "#FFF4DF"
+      font-color: "#5C3500"
+      stroke: "#B45309"
+      border-radius: 8
+    }
+  }
+  risk: {
+    style: {
+      fill: "#FCEBEC"
+      font-color: "#6D1E1E"
+      stroke: "#9D2A2A"
+      border-radius: 8
+    }
+  }
+  note: {
+    shape: document
+    style: {
+      fill: "#F6F9FA"
+      font-color: "#162433"
+      stroke: "#526577"
+      border-radius: 6
+    }
+  }
+}
+
+n_shared: "common crate\n#[repr(C)] POD ABI" {class: data}
+n_ebpf: "ebpf crate\nno_std · aya-ebpf" {class: kernel}
+n_object: "ELF + BTF\neBPF bytecode" {class: user}
+n_userspace: "userspace crate\nAya loader + decoder" {class: user}
+n_map: "BPF map / ring buffer\nbyte-level boundary" {class: data}
+n_kernel: "Kernel hook context\nhelper API" {class: kernel}
+n_shared -> n_ebpf: "event layout"
+n_shared -> n_userspace: "same layout"
+n_ebpf -> n_object: "compile"
+n_object -> n_userspace: "include_bytes / load"
+n_kernel -> n_ebpf: "context"
+n_ebpf -> n_map: "write"
+n_map -> n_userspace: "read"

@@ -1,0 +1,4 @@
+name = "14-sentinel-capstone"
+programs = "target-btf:sentinel_file_open"
+runner = "sample-runner"
+status = "quarantined"

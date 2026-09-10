@@ -1,0 +1,72 @@
+direction: right
+
+classes: {
+  kernel: {
+    style: {
+      fill: "#0B1F33"
+      font-color: "#FFFFFF"
+      stroke: "#0B1F33"
+      border-radius: 8
+    }
+  }
+  user: {
+    style: {
+      fill: "#EAF3FB"
+      font-color: "#0B1F33"
+      stroke: "#1769AA"
+      border-radius: 8
+    }
+  }
+  data: {
+    style: {
+      fill: "#E7F6F5"
+      font-color: "#0B1F33"
+      stroke: "#007F8B"
+      border-radius: 8
+    }
+  }
+  decision: {
+    shape: diamond
+    style: {
+      fill: "#FFF4DF"
+      font-color: "#5C3500"
+      stroke: "#B45309"
+      border-radius: 8
+    }
+  }
+  risk: {
+    style: {
+      fill: "#FCEBEC"
+      font-color: "#6D1E1E"
+      stroke: "#9D2A2A"
+      border-radius: 8
+    }
+  }
+  note: {
+    shape: document
+    style: {
+      fill: "#F6F9FA"
+      font-color: "#162433"
+      stroke: "#526577"
+      border-radius: 6
+    }
+  }
+}
+
+n_source: "Rust eBPF source\n#![no_std]" {class: user}
+n_object: "ELF object\nBTF + relocations" {class: user}
+n_loader: "Userspace loader\nAya" {class: user}
+n_verify: "Verifier\nstate exploration" {class: kernel}
+n_link: "BPF link\nattachment lifetime" {class: data}
+n_hook: "Tracepoint / LSM / XDP\nhook invocation" {class: kernel}
+n_events: "Ring buffer / map\ntelemetry" {class: data}
+n_cleanup: "Detach + unpin\ncleanup" {class: risk}
+n_source -> n_object: "compile"
+n_object -> n_loader: "open"
+n_loader -> n_verify: "BPF_PROG_LOAD"
+n_verify -> n_link: "accepted"
+n_link -> n_hook: "attach"
+n_hook -> n_events: "emit / update"
+n_events -> n_loader: "consume"
+n_loader -> n_cleanup: "on exit"
+n_cleanup -> n_link: "close"

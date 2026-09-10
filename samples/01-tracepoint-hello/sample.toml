@@ -1,0 +1,4 @@
+name = "01-tracepoint-hello"
+object = "tracepoint-hello"
+programs = "tracepoint_hello"
+runner = "sample-runner"

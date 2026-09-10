@@ -1,0 +1,69 @@
+direction: right
+
+classes: {
+  kernel: {
+    style: {
+      fill: "#0B1F33"
+      font-color: "#FFFFFF"
+      stroke: "#0B1F33"
+      border-radius: 8
+    }
+  }
+  user: {
+    style: {
+      fill: "#EAF3FB"
+      font-color: "#0B1F33"
+      stroke: "#1769AA"
+      border-radius: 8
+    }
+  }
+  data: {
+    style: {
+      fill: "#E7F6F5"
+      font-color: "#0B1F33"
+      stroke: "#007F8B"
+      border-radius: 8
+    }
+  }
+  decision: {
+    shape: diamond
+    style: {
+      fill: "#FFF4DF"
+      font-color: "#5C3500"
+      stroke: "#B45309"
+      border-radius: 8
+    }
+  }
+  risk: {
+    style: {
+      fill: "#FCEBEC"
+      font-color: "#6D1E1E"
+      stroke: "#9D2A2A"
+      border-radius: 8
+    }
+  }
+  note: {
+    shape: document
+    style: {
+      fill: "#F6F9FA"
+      font-color: "#162433"
+      stroke: "#526577"
+      border-radius: 6
+    }
+  }
+}
+
+n_entry: "Program entry\nr1 = context" {class: kernel}
+n_check: "Bounds check\nptr + offset < data_end" {class: decision}
+n_safe: "Safe branch\nproven pointer range" {class: data}
+n_unsafe: "Unsafe branch\nunknown dereference" {class: risk}
+n_helper: "Helper call\nprototype-compatible args" {class: decision}
+n_accept: "Accept\nload program" {class: user}
+n_reject: "Reject\nverifier log" {class: risk}
+n_entry -> n_check
+n_check -> n_safe: "true"
+n_check -> n_unsafe: "false / absent"
+n_unsafe -> n_reject
+n_safe -> n_helper
+n_helper -> n_accept: "yes"
+n_helper -> n_reject: "no"

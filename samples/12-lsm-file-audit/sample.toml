@@ -1,0 +1,4 @@
+name = "12-lsm-file-audit"
+programs = "target-btf:lsm_file_audit"
+runner = "sample-runner"
+status = "quarantined"

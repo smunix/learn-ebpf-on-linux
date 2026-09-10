@@ -1,0 +1,3 @@
+name = "08-page-fault-profiler"
+programs = "page_fault_user"
+runner = "sample-runner"
