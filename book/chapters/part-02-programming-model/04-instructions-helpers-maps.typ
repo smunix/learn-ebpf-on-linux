@@ -147,7 +147,7 @@ Use a disposable VM that you can revert. This sample is audit-only, but it obser
 
 #terminal-listing(
   title: [Build, preflight, and tracepoint check as an ordinary user],
-  "cd /path/to/learn-eBPF-00/samples\ncargo xtask check\ncargo xtask build-ebpf\ncargo build -p sample-runner\ncargo run -p sample-runner -- lab-check\ntest -r /sys/kernel/tracing/events/syscalls/sys_enter_openat/id \\n  || test -r /sys/kernel/debug/tracing/events/syscalls/sys_enter_openat/id",
+  "cd /path/to/learn-ebpf-on-linux/samples\ncargo xtask check\ncargo xtask build-ebpf\ncargo build -p sample-runner\ncargo run -p sample-runner -- lab-check\ntest -r /sys/kernel/tracing/events/syscalls/sys_enter_openat/id \\n  || test -r /sys/kernel/debug/tracing/events/syscalls/sys_enter_openat/id",
 )
 
 The `lab-check` command is read-only and reports the runner’s observed Linux, BPF Type Format (BTF), cgroup version 2, bpffs, tracefs, and EUID indicators. For this counter, BTF is not a required data-access mechanism: the program is an ordinary tracepoint handler and does not decode BTF-described kernel structures. Nevertheless, tracefs visibility, the named event, BPF authority, resource accounting, the built object, and verifier acceptance are all required for a runtime result. Feature-probe the target instead of release-gating it. A BPF Type Format/Compile Once – Run Everywhere (BTF/CO-RE) strategy can relocate eligible structure accesses, but it cannot create an absent hook, map type, permission, or configuration #cite(<libbpf-core>).
@@ -156,7 +156,7 @@ In one terminal, run only the already-built loader, with a short duration. The c
 
 #terminal-listing(
   title: [Attach the already-built audit-only loader in the disposable VM],
-  "cd /path/to/learn-eBPF-00/samples\nsudo ./target/debug/sample-runner run 02-syscall-counter --duration 10",
+  "cd /path/to/learn-ebpf-on-linux/samples\nsudo ./target/debug/sample-runner run 02-syscall-counter --duration 10",
 )
 
 While that fixed interval is active, use a second terminal to create a small, benign trigger:

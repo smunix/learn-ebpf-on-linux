@@ -10,7 +10,7 @@ use aya_ebpf::{
     bindings::{bpf_sock_addr, xdp_action},
     helpers::{
         bpf_get_current_cgroup_id, bpf_get_current_comm, bpf_get_current_pid_tgid,
-        bpf_get_current_uid_gid, bpf_ktime_get_ns,
+        bpf_get_current_uid_gid, bpf_get_smp_processor_id, bpf_ktime_get_ns,
     },
     macros::{cgroup_sock_addr, map, tracepoint, xdp},
     maps::{LruHashMap, PerCpuArray, PerCpuHashMap, RingBuf},
@@ -18,18 +18,19 @@ use aya_ebpf::{
 };
 #[cfg(feature = "target-btf")]
 use aya_ebpf::{
-    helpers::bpf_probe_read_kernel,
+    helpers::{bpf_probe_read_kernel, bpf_seq_write},
     macros::{btf_tracepoint, lsm},
     maps::{Array, HashMap},
     programs::{BtfTracePointContext, LsmContext},
 };
 use sentinel_common::{
-    ABI_SCHEMA_VERSION, ConnectEvent, Event, RING_BYTES, RecordHeader, kind, metric,
+    ABI_SCHEMA_VERSION, ConnectEvent, Event, RING_BYTES, RecordHeader, TelemetryCounter,
+    TelemetryEvent, TelemetryKey, kind, metric,
 };
 #[cfg(feature = "target-btf")]
-use sentinel_common::{EACCES, EnforcementConfig, FileIdentity, reason};
+use sentinel_common::{EACCES, EnforcementConfig, FileIdentity, TelemetrySnapshot, reason};
 #[cfg(feature = "target-btf")]
-use vmlinux::{file, inode, super_block, task_struct};
+use vmlinux::{bpf_iter__bpf_map_elem, file, inode, super_block, task_struct};
 
 #[map]
 static EVENTS: RingBuf = RingBuf::with_byte_size(RING_BYTES, 0);
@@ -47,6 +48,13 @@ static BUCKETS: PerCpuArray<u64> = PerCpuArray::with_max_entries(32, 0);
 static PAGE_FAULTS: PerCpuArray<u64> = PerCpuArray::with_max_entries(1, 0);
 #[map]
 static PACKETS: PerCpuArray<u64> = PerCpuArray::with_max_entries(2, 0);
+#[map]
+static TELEMETRY: PerCpuHashMap<TelemetryKey, TelemetryCounter> =
+    PerCpuHashMap::with_max_entries(4096, 0);
+#[cfg(feature = "target-btf")]
+#[map]
+static TELEMETRY_EXPORT: HashMap<TelemetryKey, TelemetryCounter> =
+    HashMap::with_max_entries(4096, 0);
 #[cfg(feature = "target-btf")]
 #[map]
 static POLICY: HashMap<FileIdentity, u8> = HashMap::with_max_entries(128, 0);
@@ -105,6 +113,37 @@ fn emit(event: Event) {
 }
 
 #[inline(always)]
+fn update_telemetry(key: &TelemetryKey, observed_bytes: u64, now: u64) {
+    if let Some(value) = TELEMETRY.get_ptr_mut(key) {
+        unsafe {
+            (*value).events = (*value).events.wrapping_add(1);
+            (*value).observed_bytes = (*value).observed_bytes.wrapping_add(observed_bytes);
+            (*value).last_seen_ns = now;
+        }
+        return;
+    }
+
+    let initial = TelemetryCounter {
+        events: 1,
+        observed_bytes,
+        last_seen_ns: now,
+    };
+    // A per-CPU hash insert creates the key and initializes this CPU's slot. If
+    // a concurrent producer created the key, retry the current CPU's slot.
+    if TELEMETRY.insert(key, &initial, 1).is_err() {
+        if let Some(value) = TELEMETRY.get_ptr_mut(key) {
+            unsafe {
+                (*value).events = (*value).events.wrapping_add(1);
+                (*value).observed_bytes = (*value).observed_bytes.wrapping_add(observed_bytes);
+                (*value).last_seen_ns = now;
+            }
+        } else {
+            record_map_error(metric::TELEMETRY_INSERT_FAILED);
+        }
+    }
+}
+
+#[inline(always)]
 fn increment_hash(map: &PerCpuHashMap<u32, u64>, key: u32) {
     if let Some(ptr) = map.get_ptr_mut(&key) {
         // This value belongs to the executing CPU because the map is per-CPU.
@@ -139,6 +178,40 @@ pub fn map_patterns(_ctx: TracePointContext) -> u32 {
         record_map_error(metric::LRU_INSERT_FAILED);
     }
     emit(base(kind::SYSCALL, 1));
+    0
+}
+
+#[tracepoint]
+pub fn telemetry_sys_enter(_ctx: TracePointContext) -> u32 {
+    let ids = bpf_get_current_pid_tgid();
+    let key = TelemetryKey {
+        tgid: (ids >> 32) as u32,
+        uid: bpf_get_current_uid_gid() as u32,
+        cgroup_id: unsafe { bpf_get_current_cgroup_id() },
+    };
+    let now = unsafe { bpf_ktime_get_ns() };
+    update_telemetry(&key, 1, now);
+
+    let event = TelemetryEvent {
+        header: RecordHeader {
+            schema_version: ABI_SCHEMA_VERSION,
+            record_len: core::mem::size_of::<TelemetryEvent>() as u16,
+            kind: kind::TELEMETRY,
+            reserved: 0,
+        },
+        timestamp_ns: now,
+        cgroup_id: key.cgroup_id,
+        key,
+        observed_bytes: 1,
+        cpu: unsafe { bpf_get_smp_processor_id() },
+        reserved: 0,
+    };
+    if let Some(mut slot) = EVENTS.reserve::<TelemetryEvent>(0) {
+        slot.write(event);
+        slot.submit(0);
+    } else {
+        record_transport_drop();
+    }
     0
 }
 
@@ -211,6 +284,37 @@ pub fn core_process_inspector(ctx: BtfTracePointContext) -> i32 {
     let child_pid = unsafe { bpf_probe_read_kernel(&(*child).pid) }.unwrap_or(0);
     emit(base(kind::PROCESS, child_pid as u64));
     0
+}
+
+/// Kernel-executed iterator over one map selected by user space at link-create
+/// time. It is target-BTF gated because the iterator context is kernel BTF.
+#[cfg(feature = "target-btf")]
+#[unsafe(link_section = "iter/bpf_map_elem")]
+#[unsafe(no_mangle)]
+pub fn telemetry_map_iter(ctx: *mut bpf_iter__bpf_map_elem) -> i32 {
+    if ctx.is_null() {
+        return 0;
+    }
+    let (meta, key, value) = unsafe { ((*ctx).meta, (*ctx).key, (*ctx).value) };
+    if meta.is_null() || key.is_null() || value.is_null() {
+        return 0;
+    }
+    // User space stages this ordinary export map after the observation loop.
+    // No eBPF producer writes it, so values stay immutable for this session.
+    let counter = unsafe { *(value.cast::<TelemetryCounter>()) };
+    let snapshot = TelemetrySnapshot {
+        key: unsafe { *(key.cast::<TelemetryKey>()) },
+        counter,
+        position: unsafe { (*meta).seq_num },
+    };
+    let seq = unsafe { (*meta).seq }.cast();
+    unsafe {
+        bpf_seq_write(
+            seq,
+            core::ptr::addr_of!(snapshot).cast(),
+            core::mem::size_of::<TelemetrySnapshot>() as u32,
+        ) as i32
+    }
 }
 
 #[cfg(feature = "target-btf")]

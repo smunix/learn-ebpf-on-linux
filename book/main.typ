@@ -62,7 +62,7 @@
   #v(0.7em)
   This is the first edition of #emph[Learning eBPF on Linux]. The prose and original diagrams are licensed under Creative Commons Attribution-ShareAlike 4.0 International. The Rust, Nix, shell, and configuration code is available under your choice of the MIT License or Apache License 2.0. Third-party projects and quoted interfaces retain their own terms.
 
-  The canonical, versioned source is the `learn-eBPF-00` repository. Examples in this book import or link to files in `samples/`; treat that source and its lockfiles as authoritative when a printed listing is abbreviated.
+  The canonical, versioned source is the `learn-ebpf-on-linux` repository. Examples in this book import or link to files in `samples/`; treat that source and its lockfiles as authoritative when a printed listing is abbreviated.
 
   #v(0.8em)
   #security-note(title: "Run kernel code only in a recovery-capable lab")[
@@ -118,6 +118,9 @@
 #part-opener("VI", [Security with BPF LSM], deck: [Move from observation to a narrowly scoped Linux Security Module decision with audit-first rollout, explicit identity limits, health telemetry, and rollback.])
 #include "chapters/part-06-security-with-lsm/17-lsm-framework.typ"
 #include "chapters/part-06-security-with-lsm/18-audit-to-enforcement.typ"
+
+#part-opener("VII", [Advanced Telemetry], deck: [Combine loss-aware real-time ring-buffer events with coherent map snapshots, custom Rust iterators, and target-BTF kernel iterator programs.])
+#include "chapters/part-07-advanced-telemetry/19-map-iterators-ring-buffers.typ"
 
 #part-opener("A", [Field Reference], deck: [Configuration, commands, verifier diagnostics, compatibility evidence, and troubleshooting for repeatable lab work.])
 #include "chapters/appendices/appendix-a-kernel-config.typ"

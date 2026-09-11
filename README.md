@@ -2,9 +2,9 @@
 
 **Author: Providence Salumu**
 
-**Learning eBPF on Linux** is a reproducible, NixOS-first book and laboratory for learning extended Berkeley Packet Filter (eBPF) programming with Rust and [Aya](https://aya-rs.dev/). It begins with a payload-free tracepoint counter, develops verifier-level reasoning and Linux kernel internals, and ends with an audit-first Linux Security Module (LSM) file policy whose denial path is explicitly opt-in and confined to a disposable control group.
+**Learning eBPF on Linux** is a reproducible, NixOS-first book and laboratory for learning extended Berkeley Packet Filter (eBPF) programming with Rust and [Aya](https://aya-rs.dev/). It begins with a payload-free tracepoint counter, develops verifier-level reasoning and Linux kernel internals, builds an audit-first Linux Security Module (LSM) file policy, and finishes with custom map iterators plus loss-aware real-time ring-buffer telemetry.
 
-The Typst manuscript is a 203-page first edition with 18 chapters, five appendices, original diagrams, a glossary, numeric citations, and clickable internal references. Canonical code lives in `samples/`; the book imports that source rather than maintaining independent code copies.
+The Typst manuscript is a 221-page edition with 19 chapters, five appendices, original diagrams, a glossary, numeric citations, and clickable internal references. Canonical code lives in `samples/`; the book imports that source rather than maintaining independent code copies.
 
 > **Safety boundary:** build and inspect on any suitable development host, but load or attach kernel programs only in a disposable, recovery-capable NixOS virtual machine or another explicitly authorized non-production machine. Do not run Cargo as root. Build as an ordinary user, then grant only the reviewed loader the authority required by the exact hook. The repository never asks readers to weaken `unprivileged_bpf_disabled`, lower global perf restrictions, or grant blanket `CAP_SYS_ADMIN` merely to force an example to run.
 
@@ -48,7 +48,7 @@ The workspace pins `aya = 0.14.0`, `aya-ebpf = 0.2.1`, and `nightly-2026-07-15` 
 | `just samples` | Builds the user-space runner and eBPF ELF objects | No |
 | `just target-bindings -- --install-tool` | Generates selected Rust kernel bindings from this booted kernel's BTF and records hashes | No |
 | `just target-btf-object` | Builds a separately named object containing target-BTF-gated programs | No |
-| `just diagrams` | Re-renders the 20 original D2 diagrams | No |
+| `just diagrams` | Re-renders the 22 original D2 diagrams | No |
 | `just kernel-audit` | Reads kernel, BTF, tracefs, cgroup, and LSM evidence | No |
 | `just smoke` | Runs the read-only smoke harness | No |
 | `just vm-test` | Builds the disposable NixOS BTF/BPF-LSM audit VM | Only inside the VM; no repository eBPF attachment |
@@ -76,8 +76,9 @@ The workspace pins `aya = 0.14.0`, `aya-ebpf = 0.2.1`, and `nightly-2026-07-15` 
 | V. Verifier and Portability | 16. Kernel-Version Survival | `00-lab-check` |
 | VI. Security with LSM | 17. The Linux Security Module Framework | `12-lsm-file-audit` |
 | VI. Security with LSM | 18. From Audit to Enforcement | `13-lsm-file-enforce`, `14-sentinel-capstone` |
+| VII. Advanced Telemetry | 19. Custom Map Iterators and Real-Time Ring-Buffer Telemetry | `15-map-iterator-telemetry` |
 
-Samples 06, 07, and 12–14 are deliberately **quarantined** from the default object until a target provides the required tracepoint/BTF fixture and retained load–attach–detach evidence. Their source and documentation teach the design and test protocol without claiming runtime portability that this repository has not demonstrated.
+Samples 06, 07, and 12–14 are deliberately **quarantined** from the default object until a target provides the required tracepoint/BTF fixture and retained load–attach–detach evidence. Sample 15's tracepoint, map, ring-buffer, and custom userspace iterator are in the default object; only its optional `iter/bpf_map_elem` program is target-BTF gated. Their source and documentation teach the design and test protocol without claiming runtime portability that this repository has not demonstrated.
 
 ### Building a target-BTF-gated object
 
@@ -125,7 +126,7 @@ Missing policy, unsupported identity, and telemetry reservation failure do not b
 ## Repository layout
 
 ```text
-book/       Typst source, semantic components, 18 chapters, appendices, diagrams
+book/       Typst source, semantic components, 19 chapters, appendices, diagrams
 samples/    Rust/Aya workspace, eBPF programs, loader, verifier fixtures, READMEs
 nix/        Pinned development shell, build packages, NixOS module, VM test
 scripts/    Diagram, BTF generation, link, snippet, kernel-audit, and smoke helpers

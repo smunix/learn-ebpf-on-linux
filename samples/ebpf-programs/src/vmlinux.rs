@@ -78,3 +78,32 @@ pub struct task_struct {
     pub pid: i32,
     pub tgid: i32,
 }
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct seq_file {
+    pub _opaque: [u8; 0],
+}
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct bpf_iter_meta {
+    pub seq: *mut seq_file,
+    pub session_id: u64,
+    pub seq_num: u64,
+}
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct bpf_map {
+    pub _opaque: [u8; 0],
+}
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct bpf_iter__bpf_map_elem {
+    pub meta: *mut bpf_iter_meta,
+    pub map: *mut bpf_map,
+    pub key: *mut ::aya_ebpf::cty::c_void,
+    pub value: *mut ::aya_ebpf::cty::c_void,
+}

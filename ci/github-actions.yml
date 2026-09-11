@@ -41,11 +41,20 @@ jobs:
           test -s result-samples/lib/learn-ebpf/tracepoint-hello
           test -s result-samples/lib/learn-ebpf/samples-ebpf
 
+      - name: Audit default telemetry object boundaries
+        run: |
+          nix develop --command bash -c '
+            object=result-samples/lib/learn-ebpf/samples-ebpf
+            llvm-objdump -t "$object" | grep telemetry_sys_enter
+            ! llvm-objdump -t "$object" | grep telemetry_map_iter
+            ! llvm-objdump -d "$object" | grep -E "call +93|call +94"
+          '
+
       - name: Parse shell scripts
         run: nix develop --command bash -n scripts/*.sh
 
       - name: Verify local documentation links
-        run: nix develop --command bash scripts/verify-links.sh --offline README.md CONTRIBUTING.md
+        run: nix develop --command bash scripts/verify-links.sh --offline README.md CONTRIBUTING.md samples/README.md samples/15-map-iterator-telemetry/README.md
 
       - name: Parse documentation snippets without execution
         run: nix develop --command bash scripts/verify-snippets.sh README.md CONTRIBUTING.md

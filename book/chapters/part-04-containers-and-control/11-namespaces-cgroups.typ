@@ -167,21 +167,21 @@ In the first terminal, enter the pinned development shell, build as your ordinar
 
 #terminal-listing(
   title: [Terminal A — build and read-only preflight],
-  "cd /home/ubuntu/learn-eBPF-00\nnix develop\ncd samples\ncargo xtask build-ebpf\ncargo build -p sample-runner\n\nTRACEFS=/sys/kernel/tracing\n[ -d \"$TRACEFS/events\" ] || TRACEFS=/sys/kernel/debug/tracing\ntest -r \"$TRACEFS/events/syscalls/sys_enter_execve/id\"\ncat \"$TRACEFS/events/syscalls/sys_enter_execve/id\"\nsed -n '1,12p' \"$TRACEFS/events/syscalls/sys_enter_execve/format\"\nfindmnt -t cgroup2",
+  "cd /home/ubuntu/learn-ebpf-on-linux\nnix develop\ncd samples\ncargo xtask build-ebpf\ncargo build -p sample-runner\n\nTRACEFS=/sys/kernel/tracing\n[ -d \"$TRACEFS/events\" ] || TRACEFS=/sys/kernel/debug/tracing\ntest -r \"$TRACEFS/events/syscalls/sys_enter_execve/id\"\ncat \"$TRACEFS/events/syscalls/sys_enter_execve/id\"\nsed -n '1,12p' \"$TRACEFS/events/syscalls/sys_enter_execve/format\"\nfindmnt -t cgroup2",
 )
 
 If those checks succeed, start only the already-built loader binary for a short interval. The runner caps `--duration` at 60 seconds. Its source currently requires effective UID 0 before attempting attachment, so this step uses `sudo` for the binary only—not for Cargo or the build scripts.
 
 #terminal-listing(
   title: [Terminal A — bounded audit-only observation],
-  "cd /home/ubuntu/learn-eBPF-00/samples\nsudo ./target/debug/sample-runner run 11-container-attribution --duration 10",
+  "cd /home/ubuntu/learn-ebpf-on-linux/samples\nsudo ./target/debug/sample-runner run 11-container-attribution --duration 10",
 )
 
 While that command is observing, use the second terminal to create one disposable leaf cgroup, display its numeric directory inode through the runner's `cgroup-id` command, then execute `/bin/true` from that leaf. The `exec` replaces the temporary shell, producing a predictable `execve` trigger. This changes cgroup placement only in the disposable VM and creates no policy; do not adapt it to a managed production hierarchy.
 
 #terminal-listing(
   title: [Terminal B — trigger one execution from a disposable cgroup],
-  "cd /home/ubuntu/learn-eBPF-00/samples\nsudo mkdir /sys/fs/cgroup/learn-ebpf-attribution\nsudo ./target/debug/sample-runner cgroup-id /sys/fs/cgroup/learn-ebpf-attribution\nsudo sh -c 'printf \"%s\\n\" \"$$\" > /sys/fs/cgroup/learn-ebpf-attribution/cgroup.procs; exec /bin/true'",
+  "cd /home/ubuntu/learn-ebpf-on-linux/samples\nsudo mkdir /sys/fs/cgroup/learn-ebpf-attribution\nsudo ./target/debug/sample-runner cgroup-id /sys/fs/cgroup/learn-ebpf-attribution\nsudo sh -c 'printf \"%s\\n\" \"$$\" > /sys/fs/cgroup/learn-ebpf-attribution/cgroup.procs; exec /bin/true'",
 )
 
 The last command exits promptly. An execution launched outside the test cgroup is a useful negative control: it should have a different cgroup number, but it does not prove that either event has a runtime container name. Keep any captured output with the VM's kernel release, build revision, object hash, and the preflight results if you intend to call the exercise tested on that target.

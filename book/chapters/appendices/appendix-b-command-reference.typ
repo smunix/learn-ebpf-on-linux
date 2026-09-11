@@ -32,7 +32,7 @@ authority description. #cite(<capabilities>)]
 
 == Working boundary and command classes
 
-Unless shown otherwise, begin in `/home/ubuntu/learn-eBPF-00`. The flake exposes
+Unless shown otherwise, begin in `/home/ubuntu/learn-ebpf-on-linux`. The flake exposes
 only `x86_64-linux`; treat an evaluation failure on another architecture as an
 explicit support boundary. `nix develop` provides the repository's Rust,
 Clang/LLVM, `bpftool`, BPF linker, `just`, Typst, and validation tools. The
@@ -43,7 +43,7 @@ and calling the resulting object equivalent. #cite(<aya-book>)
 
 #terminal-listing(
   title: [Enter the pinned shell and identify the target],
-  "cd /home/ubuntu/learn-eBPF-00\nnix develop\nuname -m\nuname -r\ngit rev-parse HEAD\nsha256sum flake.lock samples/Cargo.lock samples/rust-toolchain.toml"
+  "cd /home/ubuntu/learn-ebpf-on-linux\nnix develop\nuname -m\nuname -r\ngit rev-parse HEAD\nsha256sum flake.lock samples/Cargo.lock samples/rust-toolchain.toml"
 )
 
 These commands collect evidence only; retain their output with a runtime
@@ -114,7 +114,7 @@ foundation check.
 
 #terminal-listing(
   title: [Audit the running target without changing it],
-  "cd /home/ubuntu/learn-eBPF-00\njust kernel-audit\n./scripts/check-kernel.sh --require-btf --require-bpf-lsm\n./scripts/smoke-tests.sh --audit"
+  "cd /home/ubuntu/learn-ebpf-on-linux\njust kernel-audit\n./scripts/check-kernel.sh --require-btf --require-bpf-lsm\n./scripts/smoke-tests.sh --audit"
 )
 
 The strict `check-kernel.sh` invocation may fail on a target that lacks readable
@@ -157,7 +157,7 @@ repository objects.
 
 #terminal-listing(
   title: [Capability-gated bpftool probes],
-  "cd /home/ubuntu/learn-eBPF-00\nbpftool version\n./scripts/smoke-tests.sh --probe --allow-privileged\nbpftool btf dump file /sys/kernel/btf/vmlinux format raw | sed -n '1,20p'"
+  "cd /home/ubuntu/learn-ebpf-on-linux\nbpftool version\n./scripts/smoke-tests.sh --probe --allow-privileged\nbpftool btf dump file /sys/kernel/btf/vmlinux format raw | sed -n '1,20p'"
 )
 
 Run the final BTF-dump pipeline only when the BTF file is readable. A probe that
@@ -182,7 +182,7 @@ lockfile.
 
 #terminal-listing(
   title: [Build and audit as an ordinary user],
-  "cd /home/ubuntu/learn-eBPF-00/samples\ncargo xtask check\ncargo xtask build-ebpf\ncargo build -p sample-runner\n./target/debug/sample-runner lab-check"
+  "cd /home/ubuntu/learn-ebpf-on-linux/samples\ncargo xtask check\ncargo xtask build-ebpf\ncargo build -p sample-runner\n./target/debug/sample-runner lab-check"
 )
 
 The first three commands can write ordinary workspace build artifacts under
@@ -218,7 +218,7 @@ fresh disposable VM. This is an audit-only observation command with an explicit
 
 #terminal-listing(
   title: [Conditional bounded tracepoint observation in a disposable VM],
-  "cd /home/ubuntu/learn-eBPF-00/samples\nsudo ./target/debug/sample-runner run 01-tracepoint-hello --duration 10"
+  "cd /home/ubuntu/learn-ebpf-on-linux/samples\nsudo ./target/debug/sample-runner run 01-tracepoint-hello --duration 10"
 )
 
 The runner checks tracefs readability before this attachment, loads the object
@@ -280,7 +280,7 @@ touching kernel state:
 
 #terminal-listing(
   title: [Remove only local Cargo build artifacts],
-  "cd /home/ubuntu/learn-eBPF-00/samples\ncargo clean"
+  "cd /home/ubuntu/learn-ebpf-on-linux/samples\ncargo clean"
 )
 
 If an isolated XDP experiment created the documented disposable veth named

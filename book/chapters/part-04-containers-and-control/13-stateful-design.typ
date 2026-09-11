@@ -151,7 +151,7 @@ Perform the following only in a disposable VM or approved non-production target.
 
 #code-listing(
   [Build, preflight, and bounded audit-only observation],
-  "cd /home/ubuntu/learn-eBPF-00/samples\n\n# Build the locked workspace as an ordinary user.\ncargo xtask build-ebpf\ncargo build -p sample-runner\n\n# Read-only preflight and target-local tracepoint contract.\n./target/debug/sample-runner lab-check\ntest -r /sys/kernel/tracing/events/syscalls/sys_enter_openat/id || test -r /sys/kernel/debug/tracing/events/syscalls/sys_enter_openat/id\ntest -r /sys/kernel/tracing/events/syscalls/sys_enter_openat/format || test -r /sys/kernel/debug/tracing/events/syscalls/sys_enter_openat/format\n\n# In the disposable VM only: run the reviewed binary, not Cargo, for 10 seconds.\nsudo -- ./target/debug/sample-runner run 04-map-patterns --duration 10",
+  "cd /home/ubuntu/learn-ebpf-on-linux/samples\n\n# Build the locked workspace as an ordinary user.\ncargo xtask build-ebpf\ncargo build -p sample-runner\n\n# Read-only preflight and target-local tracepoint contract.\n./target/debug/sample-runner lab-check\ntest -r /sys/kernel/tracing/events/syscalls/sys_enter_openat/id || test -r /sys/kernel/debug/tracing/events/syscalls/sys_enter_openat/id\ntest -r /sys/kernel/tracing/events/syscalls/sys_enter_openat/format || test -r /sys/kernel/debug/tracing/events/syscalls/sys_enter_openat/format\n\n# In the disposable VM only: run the reviewed binary, not Cargo, for 10 seconds.\nsudo -- ./target/debug/sample-runner run 04-map-patterns --duration 10",
   language: "bash",
   source-path: "expected command",
 )

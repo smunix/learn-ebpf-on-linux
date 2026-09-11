@@ -102,9 +102,9 @@ These are documentation/history aids, **not release gates**. Vendor backports, d
 | Aya `CgroupSockAddr` | Aya source documents Linux 4.17; BPF-link behavior from 5.7 with legacy attach below. | Validate exact macro-supported attach type and attachment lifecycle. |
 | Aya project research cut | Aya `0.14.0`, `aya-ebpf` `0.2.1`; repository pins Rust `1.98.1`, while Aya's stated MSRV evidence is lower. | Pin the complete Cargo graph and toolchain; do not represent “0.14” as sufficient API identity. |
 
-## 5. Primary sources mapped to the planned 18 chapters
+## 5. Primary sources mapped to the original 18-chapter plan
 
-The repository does not currently contain a populated, numbered 18-chapter manuscript; its `book/main.typ` is a placeholder. The map below is therefore the **editorial 18-chapter plan** that should be adopted or reconciled with the publisher's outline before prose is commissioned. It maps each chapter to its primary source of record rather than merely repeating every dossier bibliography. “Runtime evidence” means the rank-0 evidence should be captured by the companion sample or test.
+The map below records the **original editorial 18-chapter plan** used to commission the first manuscript. The repository now contains the complete numbered manuscript plus Chapter 19 on map iterators and ring-buffer telemetry; that chapter has its own research note in `research/chapter-19-iterators-ringbuf.md`. This historical table maps each original chapter to its primary source of record. “Runtime evidence” means the rank-0 evidence should be captured by the companion sample or test.
 
 | Ch. | Planned chapter and teaching boundary | Primary sources to cite | Required runtime evidence / companion outcome |
 |---:|---|---|---|

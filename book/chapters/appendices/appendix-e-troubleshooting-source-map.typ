@@ -17,14 +17,14 @@ Run the following commands from the repository root before a loader is considere
 
 #terminal-listing(
   title: [Audit-first repository and target record],
-  "cd /home/ubuntu/learn-eBPF-00\nnix develop\njust check\njust kernel-audit\n./scripts/smoke-tests.sh --audit\n\n# Use this stricter gate only for BTF- and BPF-LSM-dependent work.\n./scripts/check-kernel.sh --require-btf --require-bpf-lsm\n\n# Record the current shell, not an imagined service identity.\nuname -m\nuname -r\nid\ngrep -E '^Cap(Prm|Eff|Bnd|Amb):' /proc/$$/status\nfindmnt -t tracefs\nfindmnt -t bpf\nfindmnt -t cgroup2"
+  "cd /home/ubuntu/learn-ebpf-on-linux\nnix develop\njust check\njust kernel-audit\n./scripts/smoke-tests.sh --audit\n\n# Use this stricter gate only for BTF- and BPF-LSM-dependent work.\n./scripts/check-kernel.sh --require-btf --require-bpf-lsm\n\n# Record the current shell, not an imagined service identity.\nuname -m\nuname -r\nid\ngrep -E '^Cap(Prm|Eff|Bnd|Amb):' /proc/$$/status\nfindmnt -t tracefs\nfindmnt -t bpf\nfindmnt -t cgroup2"
 )
 
 `just kernel-audit` and `./scripts/check-kernel.sh` report unreadable kernel configuration as `UNKNOWN`; they do not infer it is disabled. The optional smoke-harness feature probe remains read-only but is capability-gated and cannot prove that this object will load.
 
 #terminal-listing(
   title: [Optional acknowledged feature probe],
-  "cd /home/ubuntu/learn-eBPF-00\n./scripts/smoke-tests.sh --probe --allow-privileged"
+  "cd /home/ubuntu/learn-ebpf-on-linux\n./scripts/smoke-tests.sh --probe --allow-privileged"
 )
 
 The table orders diagnosis because a missing object, unavailable target interface, or pre-loader UID gate can fail before the verifier evaluates bytecode.
@@ -80,7 +80,7 @@ Build as an ordinary user, then run only the reviewed loader in the disposable V
 
 #terminal-listing(
   title: [Runner preflight without attachment],
-  "cd /home/ubuntu/learn-eBPF-00/samples\ncargo xtask check\ncargo xtask build-ebpf\ncargo build -p sample-runner\n./target/debug/sample-runner lab-check"
+  "cd /home/ubuntu/learn-ebpf-on-linux/samples\ncargo xtask check\ncargo xtask build-ebpf\ncargo build -p sample-runner\n./target/debug/sample-runner lab-check"
 )
 
 If the loader fails before an Aya operation with the runner's EUID message, record `runner-euid-gate`, not a failed `CAP_BPF` or `CAP_PERFMON` trial. After an authorized kernel or policy denial, retain the error, capability context, object hash, target release, and command. Decline the feature if a narrow authorization design is unavailable.

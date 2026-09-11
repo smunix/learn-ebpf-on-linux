@@ -1,0 +1,36 @@
+direction: down
+
+classes: {
+  kernel: { style: { fill: "#0B1F33"; font-color: "#FFFFFF"; stroke: "#0B1F33"; border-radius: 8 } }
+  user: { style: { fill: "#EAF3FB"; font-color: "#0B1F33"; stroke: "#1769AA"; border-radius: 8 } }
+  data: { style: { fill: "#E7F6F5"; font-color: "#0B1F33"; stroke: "#007F8B"; border-radius: 8 } }
+  risk: { style: { fill: "#FCEBEC"; font-color: "#6D1E1E"; stroke: "#9D2A2A"; border-radius: 8 } }
+  decision: {
+    shape: diamond
+    style: { fill: "#FFF4DF"; font-color: "#5C3500"; stroke: "#B45309" }
+  }
+}
+
+producer: "sys_enter_openat → telemetry_sys_enter\nkey + timestamp" {class: kernel}
+ring_space: "Ring space?" {class: decision}
+ring: "EVENTS ring buffer\nper-event detail" {class: data}
+dropped: "DROPPED counter\nreservation failures" {class: risk}
+consumer: "Bounded Rust consumer\nvalidate ABI + print" {class: user}
+live_map: "TELEMETRY per-CPU hash\nCPU-local aggregate" {class: data}
+user_iter: "Custom SnapshotIter\nGET_NEXT_KEY + CPU reduction" {class: user}
+export_map: "TELEMETRY_EXPORT\nimmutable staged generation" {class: data}
+kern_iter: "iter/bpf_map_elem\nbinary bpf_seq_write" {class: kernel}
+report: "Telemetry report\nlive + snapshot + health" {class: user}
+
+producer -> ring_space: "reserve fixed record"
+ring_space -> ring: "success: write + submit"
+ring_space -> dropped: "failure: never block"
+ring -> consumer: "mmap + drain"
+producer -> live_map: "update current CPU slot"
+live_map -> user_iter: "values for all CPUs"
+user_iter -> export_map: "optional stage after interval"
+export_map -> kern_iter: "target-BTF iterator"
+consumer -> report
+dropped -> report
+user_iter -> report: "default snapshot"
+kern_iter -> report: "optional snapshot"

@@ -18,6 +18,7 @@ pub mod kind {
     pub const CONTAINER: u16 = 9;
     pub const FILE: u16 = 10;
     pub const SENTINEL: u16 = 11;
+    pub const TELEMETRY: u16 = 12;
 
     pub const fn is_base_event(value: u16) -> bool {
         matches!(
@@ -48,7 +49,8 @@ pub mod reason {
 pub mod metric {
     pub const COUNTER_INSERT_FAILED: u32 = 0;
     pub const LRU_INSERT_FAILED: u32 = 1;
-    pub const MAP_ERROR_SLOTS: u32 = 2;
+    pub const TELEMETRY_INSERT_FAILED: u32 = 2;
+    pub const MAP_ERROR_SLOTS: u32 = 3;
 }
 
 #[repr(C)]
@@ -111,10 +113,55 @@ pub struct ConnectEvent {
     pub port_be: u32,
 }
 
+/// Stable key for the telemetry teaching sample. The control-group identifier
+/// prevents equal process identifiers in different containers from colliding.
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct TelemetryKey {
+    pub tgid: u32,
+    pub uid: u32,
+    pub cgroup_id: u64,
+}
+
+/// Per-CPU counter tuple. User space merges one value from every possible CPU.
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct TelemetryCounter {
+    pub events: u64,
+    pub observed_bytes: u64,
+    pub last_seen_ns: u64,
+}
+
+/// Loss-sensitive real-time record transported through the ring buffer.
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct TelemetryEvent {
+    pub header: RecordHeader,
+    pub timestamp_ns: u64,
+    pub cgroup_id: u64,
+    pub key: TelemetryKey,
+    pub observed_bytes: u64,
+    pub cpu: u32,
+    pub reserved: u32,
+}
+
+/// Binary record emitted by the optional kernel BPF map-element iterator.
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct TelemetrySnapshot {
+    pub key: TelemetryKey,
+    pub counter: TelemetryCounter,
+    pub position: u64,
+}
+
 #[cfg(feature = "user")]
 unsafe impl aya::Pod for FileIdentity {}
 #[cfg(feature = "user")]
 unsafe impl aya::Pod for EnforcementConfig {}
+#[cfg(feature = "user")]
+unsafe impl aya::Pod for TelemetryKey {}
+#[cfg(feature = "user")]
+unsafe impl aya::Pod for TelemetryCounter {}
 
 #[cfg(test)]
 mod tests {
@@ -132,6 +179,10 @@ mod tests {
         assert_eq!(core::mem::size_of::<RecordHeader>(), 8);
         assert_eq!(core::mem::size_of::<Event>(), 96);
         assert_eq!(core::mem::size_of::<ConnectEvent>(), 104);
+        assert_eq!(core::mem::size_of::<TelemetryKey>(), 16);
+        assert_eq!(core::mem::size_of::<TelemetryCounter>(), 24);
+        assert_eq!(core::mem::size_of::<TelemetryEvent>(), 56);
+        assert_eq!(core::mem::size_of::<TelemetrySnapshot>(), 48);
         assert_eq!(
             core::mem::size_of::<Event>() % core::mem::align_of::<Event>(),
             0

@@ -148,7 +148,7 @@ The following procedure is deliberately split into build, preflight, XDP observa
 
 #chapter-terminal(
   title: "Build and read-only preflight (ordinary user)",
-  code: "cd /home/ubuntu/learn-eBPF-00/samples
+  code: "cd /home/ubuntu/learn-ebpf-on-linux/samples
 cargo xtask check
 cargo xtask build-ebpf
 cargo build -p sample-runner
@@ -178,7 +178,7 @@ In the first terminal, start the compiled loader—not Cargo—against only `vet
 
 #chapter-terminal(
   title: "Run the bounded XDP observation",
-  code: "# terminal 1, from /home/ubuntu/learn-eBPF-00/samples
+  code: "# terminal 1, from /home/ubuntu/learn-ebpf-on-linux/samples
 sudo ./target/debug/sample-runner run 09-xdp-packet-counter \
   --iface veth-ebpf0 --duration 15
 

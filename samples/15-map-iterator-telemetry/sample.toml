@@ -1,0 +1,4 @@
+name = "15-map-iterator-telemetry"
+programs = "telemetry_sys_enter,target-btf:telemetry_map_iter"
+runner = "sample-runner"
+status = "default-with-optional-target-btf-iterator"

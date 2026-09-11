@@ -159,7 +159,7 @@ Perform the following only in a disposable x86_64 NixOS VM or another explicitly
 
 #terminal-listing(
   title: "Read-only preflight and ordinary-user build",
-  "cd /home/ubuntu/learn-eBPF-00\nnix develop\njust check\ncd samples\n./target/debug/sample-runner lab-check\ntest -r /sys/kernel/tracing/events/exceptions/page_fault_user/id\ntest -r /sys/kernel/tracing/events/exceptions/page_fault_user/format\nsed -n '1,120p' /sys/kernel/tracing/events/exceptions/page_fault_user/format\ncargo xtask build-ebpf\ncargo build -p sample-runner",
+  "cd /home/ubuntu/learn-ebpf-on-linux\nnix develop\njust check\ncd samples\n./target/debug/sample-runner lab-check\ntest -r /sys/kernel/tracing/events/exceptions/page_fault_user/id\ntest -r /sys/kernel/tracing/events/exceptions/page_fault_user/format\nsed -n '1,120p' /sys/kernel/tracing/events/exceptions/page_fault_user/format\ncargo xtask build-ebpf\ncargo build -p sample-runner",
 ) <lst-ch09-preflight>
 
 The `lab-check` subcommand is read-only. The exact `test` commands are the gate because the runner attaches only the local user-fault event. Read the format even though this sample does not decode it: it identifies the target contract you are choosing not to parse. If the event is absent, stop rather than substituting another hook.
@@ -168,7 +168,7 @@ Only after a successful build and preflight, invoke the already built loader for
 
 #terminal-listing(
   title: "Time-bounded audit-only attachment in the disposable VM",
-  "cd /home/ubuntu/learn-eBPF-00/samples\nsudo ./target/debug/sample-runner run 08-page-fault-profiler --duration 10",
+  "cd /home/ubuntu/learn-ebpf-on-linux/samples\nsudo ./target/debug/sample-runner run 08-page-fault-profiler --duration 10",
 ) <lst-ch09-run>
 
 The runner caps actual observation at 60 seconds, keeps its `Ebpf` owner in scope during the loop, and relies on unpinned object lifetime when it returns. It takes no sample-specific action for `--enforce`; that generic argument is irrelevant to the `08-page-fault-profiler` match arm and does not create a memory-policy mode. Do not use `sudo cargo run`: compiling Cargo build scripts as root unnecessarily joins the ordinary build and privileged attach steps.

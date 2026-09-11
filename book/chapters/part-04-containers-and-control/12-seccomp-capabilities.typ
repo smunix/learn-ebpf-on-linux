@@ -159,7 +159,7 @@ This explains a hard limit on audit claims. An audit-only BPF LSM can report cal
 
 Use a disposable VM for every attachment trial. Build as an ordinary user; do not run Cargo as root. First, build and run the attachment-free preflight from the repository’s `samples` directory:
 
-#terminal-listing(title: "Build normally and run the read-only preflight", "cd /home/ubuntu/learn-eBPF-00/samples\ncargo xtask build-ebpf\ncargo build -p sample-runner\ntarget/debug/sample-runner lab-check") <lst-ch12-preflight-command>
+#terminal-listing(title: "Build normally and run the read-only preflight", "cd /home/ubuntu/learn-ebpf-on-linux/samples\ncargo xtask build-ebpf\ncargo build -p sample-runner\ntarget/debug/sample-runner lab-check") <lst-ch12-preflight-command>
 
 The first two build commands require the repository’s pinned toolchain and BPF build dependencies. A build failure is a setup result, not a reason to run Cargo with elevated privilege. The last command remains safe to run as an unprivileged user. Record the kernel release, all matrix rows, architecture, and the complete active-LSM list if readable:
 
@@ -171,7 +171,7 @@ Only if the preflight shows a readable BTF file and active `bpf` LSM, and only i
 
 In terminal A, place only the short-lived loader in the new leaf and run the audit sample. `exec` makes the shell process become the runner; the runner holds the attachment only for the bounded duration and its drop path detaches it. The root requirement here is the current runner implementation’s guard and the target’s actual policy; it is not a statement that UID 0 is the minimal possible kernel credential.
 
-#terminal-listing(title: "Terminal A: run the LSM sample in audit mode", "cd /home/ubuntu/learn-eBPF-00\nsudo sh -c 'echo $$ > /sys/fs/cgroup/learn-ebpf-demo/cgroup.procs; exec samples/target/debug/sample-runner run 12-lsm-file-audit --protect /tmp/learn-ebpf-demo/protected --cgroup /sys/fs/cgroup/learn-ebpf-demo --duration 30'") <lst-ch12-audit-run>
+#terminal-listing(title: "Terminal A: run the LSM sample in audit mode", "cd /home/ubuntu/learn-ebpf-on-linux\nsudo sh -c 'echo $$ > /sys/fs/cgroup/learn-ebpf-demo/cgroup.procs; exec samples/target/debug/sample-runner run 12-lsm-file-audit --protect /tmp/learn-ebpf-demo/protected --cgroup /sys/fs/cgroup/learn-ebpf-demo --duration 30'") <lst-ch12-audit-run>
 
 While terminal A observes, terminal B joins a short-lived test shell to the same leaf and opens the file. This is an access test, not a denial test; `cat` should still succeed.
 

@@ -1,0 +1,27 @@
+direction: down
+
+classes: {
+  kernel: { style: { fill: "#0B1F33"; font-color: "#FFFFFF"; stroke: "#0B1F33"; border-radius: 8 } }
+  data: { style: { fill: "#E7F6F5"; font-color: "#0B1F33"; stroke: "#007F8B"; border-radius: 8 } }
+  user: { style: { fill: "#EAF3FB"; font-color: "#0B1F33"; stroke: "#1769AA"; border-radius: 8 } }
+  risk: { style: { fill: "#FCEBEC"; font-color: "#6D1E1E"; stroke: "#9D2A2A"; border-radius: 8 } }
+}
+
+p1: "1. Producer enters\ntracepoint program" {class: kernel}
+p2: "2. reserve::<TelemetryEvent>()\nconstant verifier-known size" {class: kernel}
+p3: "3a. Reservation succeeds\ntracked ring-memory reference" {class: data}
+p4: "4a. write initialized record\nthen submit exactly once" {class: data}
+p5: "5a. Consumer notification\nself-paced by default" {class: data}
+p6: "6a. Rust drains next()\nvalidates schema and length" {class: user}
+f3: "3b. Reservation fails\nfull buffer or NMI lock contention" {class: risk}
+f4: "4b. Increment DROPPED\ndo not block or change policy" {class: risk}
+f5: "5b. No event record exists\nhealth counter is the evidence" {class: risk}
+
+p1 -> p2
+p2 -> p3: "Some(slot)"
+p3 -> p4
+p4 -> p5
+p5 -> p6
+p2 -> f3: "None"
+f3 -> f4
+f4 -> f5

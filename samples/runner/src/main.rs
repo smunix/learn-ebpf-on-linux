@@ -1,17 +1,21 @@
 use anyhow::{Context, Result, anyhow, bail};
 use aya::{
     Btf, Ebpf,
-    maps::{Array, HashMap, PerCpuArray, RingBuf},
-    programs::{BtfTracePoint, CgroupAttachMode, CgroupSockAddr, Lsm, TracePoint, Xdp, XdpMode},
+    maps::{Array, HashMap, Map, PerCpuArray, PerCpuHashMap, PerCpuValues, RingBuf},
+    programs::{
+        BtfTracePoint, CgroupAttachMode, CgroupSockAddr, Iter, Lsm, TracePoint, Xdp, XdpMode,
+    },
 };
 use clap::{Parser, Subcommand};
 use sentinel_common::{
     ABI_SCHEMA_VERSION, ConnectEvent, EVENT_FLAGS_KNOWN, EnforcementConfig, Event, FileIdentity,
-    RecordHeader, kind, metric,
+    RecordHeader, TelemetryCounter, TelemetryEvent, TelemetryKey, TelemetrySnapshot, kind, metric,
 };
 use std::{
     fs::{self, File},
+    io::{self, Read},
     net::Ipv4Addr,
+    os::fd::{AsFd, AsRawFd, FromRawFd, OwnedFd},
     os::unix::fs::MetadataExt,
     path::{Path, PathBuf},
     thread,
@@ -43,6 +47,9 @@ enum Command {
         /// Acknowledge that the supplied object was generated and tested for this target BTF.
         #[arg(long)]
         target_btf_fixture: bool,
+        /// Use the target-BTF-gated kernel bpf_map_elem iterator for the final snapshot.
+        #[arg(long)]
+        kernel_map_iterator: bool,
         #[arg(long, default_value_t = 1)]
         policy_generation: u32,
         #[arg(long, default_value_t = 10)]
@@ -77,6 +84,7 @@ fn main() -> Result<()> {
             protect,
             enforce,
             target_btf_fixture,
+            kernel_map_iterator,
             policy_generation,
             duration,
         } => run(
@@ -87,6 +95,7 @@ fn main() -> Result<()> {
             protect.as_deref(),
             enforce,
             target_btf_fixture,
+            kernel_map_iterator,
             policy_generation,
             duration,
         ),
@@ -417,6 +426,8 @@ fn print_event(bytes: &[u8]) -> Result<()> {
     let connect_len = std::mem::size_of::<ConnectEvent>();
     let expected_len = if header.kind == kind::CONNECT {
         connect_len
+    } else if header.kind == kind::TELEMETRY {
+        std::mem::size_of::<TelemetryEvent>()
     } else if kind::is_base_event(header.kind) {
         event_len
     } else {
@@ -429,6 +440,27 @@ fn print_event(bytes: &[u8]) -> Result<()> {
             expected_len,
             bytes.len()
         )
+    }
+    if header.kind == kind::TELEMETRY {
+        let cgroup_id = read_u64(bytes, 16).context("telemetry cgroup")?;
+        let key_cgroup_id = read_u64(bytes, 32).context("telemetry key cgroup")?;
+        if cgroup_id != key_cgroup_id {
+            bail!("telemetry cgroup fields disagree")
+        }
+        if read_u32(bytes, 52).context("telemetry reserved")? != 0 {
+            bail!("schema v1 telemetry reserved field is nonzero")
+        }
+        println!(
+            "telemetry schema={} tgid={} uid={} cgroup={} cpu={} observed_bytes={} timestamp_ns={}",
+            header.schema_version,
+            read_u32(bytes, 24).context("telemetry tgid")?,
+            read_u32(bytes, 28).context("telemetry uid")?,
+            cgroup_id,
+            read_u32(bytes, 48).context("telemetry cpu")?,
+            read_u64(bytes, 40).context("telemetry observed bytes")?,
+            read_u64(bytes, 8).context("telemetry timestamp")?,
+        );
+        return Ok(());
     }
     let flags = read_u32(bytes, 64).context("flags")?;
     if flags & !EVENT_FLAGS_KNOWN != 0 {
@@ -497,7 +529,224 @@ fn report_transport_metrics(ebpf: &Ebpf, parse_rejected: u64) -> Result<()> {
 fn report_map_errors(ebpf: &Ebpf) -> Result<()> {
     let counter_insert = per_cpu_array_total(ebpf, "MAP_ERRORS", metric::COUNTER_INSERT_FAILED)?;
     let lru_insert = per_cpu_array_total(ebpf, "MAP_ERRORS", metric::LRU_INSERT_FAILED)?;
-    println!("map_errors counter_insert_failed={counter_insert} lru_insert_failed={lru_insert}");
+    let telemetry_insert =
+        per_cpu_array_total(ebpf, "MAP_ERRORS", metric::TELEMETRY_INSERT_FAILED)?;
+    println!(
+        "map_errors counter_insert_failed={counter_insert} lru_insert_failed={lru_insert} telemetry_insert_failed={telemetry_insert}"
+    );
+    Ok(())
+}
+
+/// A custom iterator adaptor that gives every reduced per-CPU snapshot record
+/// an explicit position while preserving per-entry lookup errors.
+struct SnapshotIter<I> {
+    inner: I,
+    position: u64,
+}
+
+impl<I> SnapshotIter<I> {
+    const fn new(inner: I) -> Self {
+        Self { inner, position: 0 }
+    }
+}
+
+impl<I> Iterator for SnapshotIter<I>
+where
+    I: Iterator<Item = std::result::Result<(TelemetryKey, TelemetryCounter), aya::maps::MapError>>,
+{
+    type Item = Result<TelemetrySnapshot>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let entry = self.inner.next()?;
+        self.position = self.position.wrapping_add(1);
+        Some(
+            entry
+                .map(|(key, counter)| TelemetrySnapshot {
+                    key,
+                    counter,
+                    position: self.position,
+                })
+                .map_err(Into::into),
+        )
+    }
+}
+
+fn print_snapshot(source: &str, snapshot: TelemetrySnapshot) {
+    println!(
+        "snapshot source={source} position={} tgid={} uid={} cgroup={} events={} observed_bytes={} last_seen_ns={}",
+        snapshot.position,
+        snapshot.key.tgid,
+        snapshot.key.uid,
+        snapshot.key.cgroup_id,
+        snapshot.counter.events,
+        snapshot.counter.observed_bytes,
+        snapshot.counter.last_seen_ns,
+    );
+}
+
+fn take_telemetry_map(ebpf: &mut Ebpf) -> Result<Map> {
+    let map = ebpf
+        .take_map("TELEMETRY")
+        .context("TELEMETRY map missing")?;
+    match map {
+        Map::PerCpuHashMap(_) => Ok(map),
+        _ => bail!("TELEMETRY has an unexpected map type"),
+    }
+}
+
+fn merge_per_cpu(values: &PerCpuValues<TelemetryCounter>) -> TelemetryCounter {
+    values
+        .iter()
+        .fold(TelemetryCounter::default(), |mut total, value| {
+            total.events = total.events.wrapping_add(value.events);
+            total.observed_bytes = total.observed_bytes.wrapping_add(value.observed_bytes);
+            total.last_seen_ns = total.last_seen_ns.max(value.last_seen_ns);
+            total
+        })
+}
+
+fn collect_userspace_snapshots(map_data: &Map) -> Result<Vec<TelemetrySnapshot>> {
+    let map: PerCpuHashMap<_, TelemetryKey, TelemetryCounter> = PerCpuHashMap::try_from(map_data)?;
+    let entries = map.keys().filter_map(|key| match key {
+        Ok(key) => match map.get(&key, 0) {
+            Ok(values) => Some(Ok((key, merge_per_cpu(&values)))),
+            Err(aya::maps::MapError::KeyNotFound) => None,
+            Err(error) => Some(Err(error)),
+        },
+        Err(error) => Some(Err(error)),
+    });
+    SnapshotIter::new(entries).collect()
+}
+
+fn report_userspace_snapshots(snapshots: &[TelemetrySnapshot]) {
+    for snapshot in snapshots {
+        print_snapshot("userspace-percpu-reduce", *snapshot);
+    }
+}
+
+fn take_export_map(ebpf: &mut Ebpf) -> Result<Map> {
+    let map = ebpf
+        .take_map("TELEMETRY_EXPORT")
+        .context("TELEMETRY_EXPORT map missing from target-BTF object")?;
+    match map {
+        Map::HashMap(_) => Ok(map),
+        _ => bail!("TELEMETRY_EXPORT has an unexpected map type"),
+    }
+}
+
+fn stage_export_map(map_data: &mut Map, snapshots: &[TelemetrySnapshot]) -> Result<()> {
+    let mut map: HashMap<_, TelemetryKey, TelemetryCounter> = HashMap::try_from(map_data)?;
+    for snapshot in snapshots {
+        map.insert(snapshot.key, snapshot.counter, 0)?;
+    }
+    Ok(())
+}
+
+const BPF_LINK_CREATE: libc::c_uint = 28;
+const BPF_ITER_CREATE: libc::c_uint = 33;
+const BPF_TRACE_ITER: u32 = 28;
+
+#[repr(C, align(8))]
+struct BpfIterLinkInfoMap {
+    map_fd: u32,
+    reserved: [u8; 12],
+}
+
+#[repr(C, align(8))]
+struct BpfAttrLinkCreate {
+    prog_fd: u32,
+    target_fd: u32,
+    attach_type: u32,
+    flags: u32,
+    iter_info: u64,
+    iter_info_len: u32,
+    reserved: u32,
+}
+
+#[repr(C, align(8))]
+struct BpfAttrIterCreate {
+    link_fd: u32,
+    flags: u32,
+}
+
+fn bpf_fd<T>(command: libc::c_uint, attr: &T) -> io::Result<OwnedFd> {
+    let result = unsafe {
+        libc::syscall(
+            libc::SYS_bpf,
+            command,
+            (attr as *const T).cast::<libc::c_void>(),
+            std::mem::size_of::<T>(),
+        )
+    };
+    if result < 0 {
+        Err(io::Error::last_os_error())
+    } else {
+        Ok(unsafe { OwnedFd::from_raw_fd(result as i32) })
+    }
+}
+
+fn attach_map_iterator(program: &Iter, map: &Map) -> Result<(OwnedFd, File)> {
+    let map = match map {
+        Map::HashMap(map) => map,
+        _ => bail!("map iterator target is not a hash map"),
+    };
+    let info = BpfIterLinkInfoMap {
+        map_fd: map.fd().as_fd().as_raw_fd() as u32,
+        reserved: [0; 12],
+    };
+    let attr = BpfAttrLinkCreate {
+        prog_fd: program.fd()?.as_fd().as_raw_fd() as u32,
+        target_fd: 0,
+        attach_type: BPF_TRACE_ITER,
+        flags: 0,
+        iter_info: (&info as *const BpfIterLinkInfoMap) as u64,
+        iter_info_len: std::mem::size_of::<BpfIterLinkInfoMap>() as u32,
+        reserved: 0,
+    };
+    let link = bpf_fd(BPF_LINK_CREATE, &attr).context("BPF_LINK_CREATE for map iterator")?;
+    let iter_attr = BpfAttrIterCreate {
+        link_fd: link.as_fd().as_raw_fd() as u32,
+        flags: 0,
+    };
+    let iterator = bpf_fd(BPF_ITER_CREATE, &iter_attr).context("BPF_ITER_CREATE")?;
+    Ok((link, File::from(iterator)))
+}
+
+fn report_kernel_snapshots(ebpf: &mut Ebpf, map_data: &Map) -> Result<()> {
+    let btf = Btf::from_sys_fs().context("target BTF unavailable for bpf_map_elem iterator")?;
+    let program: &mut Iter = ebpf
+        .program_mut("telemetry_map_iter")
+        .context("telemetry_map_iter missing from target-BTF object")?
+        .try_into()?;
+    program.load("bpf_map_elem", &btf)?;
+    let (_link, mut iterator_file) = attach_map_iterator(program, map_data)?;
+    let mut bytes = Vec::new();
+    iterator_file.read_to_end(&mut bytes)?;
+    let record_len = std::mem::size_of::<TelemetrySnapshot>();
+    if bytes.len() % record_len != 0 {
+        bail!(
+            "kernel iterator returned {} bytes, not a multiple of {record_len}",
+            bytes.len()
+        )
+    }
+    for record in bytes.chunks_exact(record_len) {
+        print_snapshot(
+            "kernel-bpf-iterator",
+            TelemetrySnapshot {
+                key: TelemetryKey {
+                    tgid: read_u32(record, 0).context("snapshot tgid")?,
+                    uid: read_u32(record, 4).context("snapshot uid")?,
+                    cgroup_id: read_u64(record, 8).context("snapshot cgroup")?,
+                },
+                counter: TelemetryCounter {
+                    events: read_u64(record, 16).context("snapshot events")?,
+                    observed_bytes: read_u64(record, 24).context("snapshot bytes")?,
+                    last_seen_ns: read_u64(record, 32).context("snapshot timestamp")?,
+                },
+                position: read_u64(record, 40).context("snapshot position")?,
+            },
+        );
+    }
     Ok(())
 }
 
@@ -512,6 +761,7 @@ fn uses_ring(sample: &str) -> bool {
             | "12-lsm-file-audit"
             | "13-lsm-file-enforce"
             | "14-sentinel-capstone"
+            | "15-map-iterator-telemetry"
     )
 }
 
@@ -524,12 +774,21 @@ fn run(
     protect: Option<&Path>,
     enforce: bool,
     target_btf_fixture: bool,
+    kernel_map_iterator: bool,
     policy_generation: u32,
     duration: u64,
 ) -> Result<()> {
     if sample == "07-scheduler-latency" {
         bail!(
             "07 is quarantined: the default object contains no scheduler-field decoder; generate and test a target tracepoint-format fixture rather than assuming offsets"
+        )
+    }
+    if kernel_map_iterator && sample != "15-map-iterator-telemetry" {
+        bail!("--kernel-map-iterator is valid only for sample 15")
+    }
+    if kernel_map_iterator && !target_btf_fixture {
+        bail!(
+            "the kernel map iterator requires a reviewed target-BTF object and --target-btf-fixture"
         )
     }
     if matches!(
@@ -607,6 +866,12 @@ fn run(
             "container_attribution",
             "syscalls",
             "sys_enter_execve",
+        )?,
+        "15-map-iterator-telemetry" => attach_tracepoint(
+            &mut ebpf,
+            "telemetry_sys_enter",
+            "syscalls",
+            "sys_enter_openat",
         )?,
         "12-lsm-file-audit" => {
             if enforce {
@@ -696,6 +961,18 @@ fn run(
                 );
             }
         }
+        "15-map-iterator-telemetry" => {
+            let telemetry = take_telemetry_map(&mut ebpf)?;
+            let snapshots = collect_userspace_snapshots(&telemetry)?;
+            if kernel_map_iterator {
+                let mut export = take_export_map(&mut ebpf)?;
+                stage_export_map(&mut export, &snapshots)?;
+                report_kernel_snapshots(&mut ebpf, &export)?;
+            } else {
+                report_userspace_snapshots(&snapshots);
+            }
+            report_map_errors(&ebpf)?;
+        }
         _ => {}
     }
     if uses_ring(sample) {
@@ -752,5 +1029,61 @@ mod tests {
     fn accepts_zero_reserved_base_record() {
         let bytes = header_bytes(kind::EXEC, std::mem::size_of::<Event>());
         assert!(print_event(&bytes).is_ok());
+    }
+
+    #[test]
+    fn validates_telemetry_cgroup_and_reserved_fields() {
+        let mut bytes = header_bytes(kind::TELEMETRY, std::mem::size_of::<TelemetryEvent>());
+        bytes[16..24].copy_from_slice(&42_u64.to_ne_bytes());
+        bytes[32..40].copy_from_slice(&42_u64.to_ne_bytes());
+        assert!(print_event(&bytes).is_ok());
+
+        bytes[32..40].copy_from_slice(&43_u64.to_ne_bytes());
+        assert!(print_event(&bytes).is_err());
+    }
+
+    #[test]
+    fn snapshot_iterator_assigns_monotonic_positions() {
+        let entries: Vec<std::result::Result<_, aya::maps::MapError>> = vec![
+            Ok((
+                TelemetryKey {
+                    tgid: 7,
+                    uid: 8,
+                    cgroup_id: 9,
+                },
+                TelemetryCounter::default(),
+            )),
+            Ok((
+                TelemetryKey {
+                    tgid: 10,
+                    uid: 11,
+                    cgroup_id: 12,
+                },
+                TelemetryCounter::default(),
+            )),
+        ];
+        let snapshots: Vec<_> = SnapshotIter::new(entries.into_iter())
+            .map(|item| item.expect("valid fixture"))
+            .collect();
+        assert_eq!(snapshots[0].position, 1);
+        assert_eq!(snapshots[1].position, 2);
+    }
+
+    #[test]
+    fn merges_per_cpu_counts_and_latest_timestamp() {
+        let cpu_count = aya::util::nr_cpus().expect("possible CPU count");
+        let raw: Vec<_> = (0..cpu_count)
+            .map(|index| TelemetryCounter {
+                events: index as u64 + 1,
+                observed_bytes: (index as u64 + 1) * 2,
+                last_seen_ns: index as u64 + 100,
+            })
+            .collect();
+        let values = PerCpuValues::try_from(raw).expect("one value per possible CPU");
+        let merged = merge_per_cpu(&values);
+        let expected_events = (cpu_count as u64 * (cpu_count as u64 + 1)) / 2;
+        assert_eq!(merged.events, expected_events);
+        assert_eq!(merged.observed_bytes, expected_events * 2);
+        assert_eq!(merged.last_seen_ns, cpu_count as u64 + 99);
     }
 }

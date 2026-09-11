@@ -14,7 +14,7 @@ let
     nativeBuildInputs = [ pkgs.typst ];
   } ''
     mkdir -p "$out"
-    typst compile --root ${repository} ${../book/main.typ} "$out/learn-ebpf.pdf"
+    typst compile --root ${repository} ${repository}/book/main.typ "$out/learn-ebpf.pdf"
   '';
 
   samples = rustPlatform.buildRustPackage {
@@ -70,7 +70,7 @@ let
   } ''
     export PATH="${lib.makeBinPath [ pkgs.bash pkgs.python3 ]}:$PATH"
     cd ${repository}
-    bash scripts/verify-links.sh --offline README.md CONTRIBUTING.md
+    bash scripts/verify-links.sh --offline README.md CONTRIBUTING.md samples/README.md samples/15-map-iterator-telemetry/README.md
     bash scripts/verify-snippets.sh README.md CONTRIBUTING.md
     touch "$out"
   '';
@@ -80,6 +80,7 @@ let
     test -f ${../book/main.typ}
     test -f ${../samples/Cargo.lock}
     test -d ${../samples/14-sentinel-capstone}
+    test -d ${../samples/15-map-iterator-telemetry}
     touch "$out"
   '';
 in

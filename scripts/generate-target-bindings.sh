@@ -12,8 +12,8 @@ usage() {
   cat <<'USAGE'
 Usage: scripts/generate-target-bindings.sh [--install-tool] [--output PATH]
 
-Generate file, inode, super_block, and task_struct Rust bindings from the
-currently booted kernel's /sys/kernel/btf/vmlinux. The output is replaced
+Generate file, inode, super_block, task_struct, and BPF map-iterator context
+bindings from the currently booted kernel's /sys/kernel/btf/vmlinux. The output is replaced
 atomically and OUTPUT.manifest records the target and BTF digest.
 
 Run only in a disposable worktree for the exact VM that will load the object.
@@ -64,7 +64,7 @@ command -v aya-tool >/dev/null 2>&1 || {
 mkdir -p "$(dirname "$output")"
 temporary=$(mktemp "${output}.tmp.XXXXXX")
 trap 'rm -f "$temporary"' EXIT
-aya-tool generate file inode super_block task_struct >"$temporary"
+aya-tool generate file inode super_block task_struct bpf_iter_meta bpf_iter__bpf_map_elem >"$temporary"
 [[ -s $temporary ]] || { printf '%s\n' 'error: aya-tool produced an empty binding file.' >&2; exit 65; }
 
 {

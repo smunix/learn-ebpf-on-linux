@@ -128,7 +128,7 @@ The safe procedure has two levels. Level 0 is an audit that changes no kernel st
 First, enter the pinned development environment and record the harmless local evidence. The following commands read files, inspect the workspace, or compile user-space/eBPF artifacts; they do not attach a repository eBPF program.
 
 #terminal-listing(title: "Read-only audit and ordinary-user build", ```sh
-cd /home/ubuntu/learn-eBPF-00
+cd /home/ubuntu/learn-ebpf-on-linux
 nix develop
 ./scripts/check-kernel.sh
 

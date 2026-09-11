@@ -21,7 +21,7 @@ development shell containing Rust, Clang/LLVM, `bpftool`, `bpf-linker`, `pahole`
 `just`, Typst, and validation tools. Flakes provide the reproducibility mechanism;
 the lockfile revision is therefore evidence worth recording with a test result,
 not a substitute for it. @nixos-flakes The commands in this appendix use the
-repository as checked out at `/home/ubuntu/learn-eBPF-00`; run them from that
+repository as checked out at `/home/ubuntu/learn-ebpf-on-linux`; run them from that
 directory unless a command shows another path.
 
 #security-note(
@@ -44,7 +44,7 @@ nor activate a NixOS generation.
 
 #terminal-listing(
   title: "Pinned development environment and foundation checks",
-  "cd /home/ubuntu/learn-eBPF-00\nnix develop\njust check"
+  "cd /home/ubuntu/learn-ebpf-on-linux\nnix develop\njust check"
 )
 
 The following table is the authoritative command map in the current `justfile`
@@ -91,7 +91,7 @@ system configuration.
 
 #terminal-listing(
   title: "Minimal opt-in module use",
-  "{\n  imports = [ /home/ubuntu/learn-eBPF-00/nix/nixos-ebpf-lab.nix ];\n  services.learn-ebpf-lab.enable = true;\n}"
+  "{\n  imports = [ /home/ubuntu/learn-ebpf-on-linux/nix/nixos-ebpf-lab.nix ];\n  services.learn-ebpf-lab.enable = true;\n}"
 )
 
 When enabled, the module defaults `boot.kernelPackages` to
@@ -177,7 +177,7 @@ available.
 
 #terminal-listing(
   title: "Read-only BTF and BPF-LSM gate",
-  "cd /home/ubuntu/learn-eBPF-00\njust kernel-audit\n./scripts/check-kernel.sh --require-btf --require-bpf-lsm\n./scripts/smoke-tests.sh --audit"
+  "cd /home/ubuntu/learn-ebpf-on-linux\njust kernel-audit\n./scripts/check-kernel.sh --require-btf --require-bpf-lsm\n./scripts/smoke-tests.sh --audit"
 )
 
 The first command is informational; the second returns nonzero if BTF is not
@@ -292,7 +292,7 @@ as follows:
 
 #terminal-listing(
   title: "Build and run the isolated NixOS audit VM test",
-  "cd /home/ubuntu/learn-eBPF-00\nnix build .#checks.x86_64-linux.vm-test\n# Equivalent project command, when inside nix develop:\njust vm-test"
+  "cd /home/ubuntu/learn-ebpf-on-linux\nnix build .#checks.x86_64-linux.vm-test\n# Equivalent project command, when inside nix develop:\njust vm-test"
 )
 
 The test is a configuration-audit gate, not an enforcement validation or a

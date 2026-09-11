@@ -160,7 +160,7 @@ Use this procedure only in a disposable virtual machine where observing process-
 
 #terminal-listing(
   title: "Build and read-only preflight from the samples workspace",
-  "cd /home/ubuntu/learn-eBPF-00/samples\n\ncargo xtask check\ncargo xtask build-ebpf\ncargo build -p sample-runner\n./target/debug/sample-runner lab-check\nuname -r\nuname -m\nsudo bpftool feature probe",
+  "cd /home/ubuntu/learn-ebpf-on-linux/samples\n\ncargo xtask check\ncargo xtask build-ebpf\ncargo build -p sample-runner\n./target/debug/sample-runner lab-check\nuname -r\nuname -m\nsudo bpftool feature probe",
 ) <lst-05-preflight>
 
 Treat these steps as separate evidence. `cargo xtask check` formats/checks the workspace while excluding `samples-ebpf`; `cargo xtask build-ebpf` drives the BPF build and needs the pinned toolchain and `bpf-linker`. The runner’s `lab-check` is read-only and reports whether it sees Linux, the BTF file, active BPF LSM text, cgroup-v2 support in `/proc/filesystems`, bpffs, tracefs directories, and EUID zero. It does *not* verify that `sched/sched_process_exec` exists, that its exact tracepoint format is usable, that ring buffers are permitted, or that a load will pass. `bpftool feature probe` adds kernel-side feature evidence; an administrator should record its output rather than changing system policy to make a failure disappear. Feature probes and a trial load are more reliable than release-string gates. #source-ref("bpf-design-q-and-a", "https://docs.kernel.org/bpf/bpf_design_QA.html") #source-ref("bpf-ringbuf", "https://docs.kernel.org/bpf/ringbuf.html")

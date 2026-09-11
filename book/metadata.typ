@@ -9,7 +9,7 @@
   format: "7 × 10 in technical book",
   license: "CC BY-SA 4.0 for prose and original diagrams",
   code-license: "MIT OR Apache-2.0",
-  repository: "learn-eBPF-00",
+  repository: "learn-ebpf-on-linux",
   subject: "Linux eBPF, Rust, Aya, NixOS, and defensive kernel security",
 )
 

@@ -159,7 +159,7 @@ Run this procedure only in the disposable environment named in your lab record. 
 
 #terminal-listing([
 ```bash
-cd /home/ubuntu/learn-eBPF-00/samples
+cd /home/ubuntu/learn-ebpf-on-linux/samples
 
 # Record target facts; do not infer them from the build host.
 uname -r
